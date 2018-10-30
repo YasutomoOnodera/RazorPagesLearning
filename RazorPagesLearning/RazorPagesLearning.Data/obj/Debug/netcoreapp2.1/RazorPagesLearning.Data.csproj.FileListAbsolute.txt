@@ -1,0 +1,11 @@
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\bin\Debug\netcoreapp2.1\RazorPagesLearning.Data.deps.json
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\bin\Debug\netcoreapp2.1\RazorPagesLearning.Data.runtimeconfig.json
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\bin\Debug\netcoreapp2.1\RazorPagesLearning.Data.runtimeconfig.dev.json
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\bin\Debug\netcoreapp2.1\RazorPagesLearning.Data.dll
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\bin\Debug\netcoreapp2.1\RazorPagesLearning.Data.pdb
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\obj\Debug\netcoreapp2.1\RazorPagesLearning.Data.csprojAssemblyReference.cache
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\obj\Debug\netcoreapp2.1\RazorPagesLearning.Data.csproj.CoreCompileInputs.cache
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\obj\Debug\netcoreapp2.1\RazorPagesLearning.Data.AssemblyInfoInputs.cache
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\obj\Debug\netcoreapp2.1\RazorPagesLearning.Data.AssemblyInfo.cs
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\obj\Debug\netcoreapp2.1\RazorPagesLearning.Data.dll
+D:\src\RazorPagesLearning\RazorPagesLearning\RazorPagesLearning.Data\obj\Debug\netcoreapp2.1\RazorPagesLearning.Data.pdb

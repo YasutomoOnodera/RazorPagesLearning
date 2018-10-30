@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RazorPagesLearning.Data;
 
 namespace RazorPagesLearning
 {
@@ -31,6 +34,14 @@ namespace RazorPagesLearning
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            ///formにおけるpostの最大数
+            ///https://www.billbogaiv.com/posts/submitting-large-number-of-form-values-in-aspnet-core-10
+            services.Configure<FormOptions>(x => x.ValueCountLimit = 65536);
+
+            //SQLサーバーへの接続を初期化
+            services.AddDbContext<RazorPagesLearningContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

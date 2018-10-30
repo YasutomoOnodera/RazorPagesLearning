@@ -14,6 +14,9 @@ namespace RazorPagesLearning
     {
         public static void Main(string[] args)
         {
+            //Win上で実行した時の日本語化対応
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
