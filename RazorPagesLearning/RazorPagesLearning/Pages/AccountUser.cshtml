@@ -1,0 +1,473 @@
+﻿@page "{id:int?}"
+@model RazorPagesLearning.Pages.AccountUserModel
+@{
+    ViewData["Title"] = "AccountUser";
+}
+
+<!-- DataTablesを読み取るために必要なコンポーネントを取り込み -->
+<partial name="_DataTablesScriptsPartial" />
+
+<script>
+
+    $(document).ready(function () {
+        //ページロード時
+        //テーブルをセットアップする
+        VegaUtility.StaticFunctions.TableHelper.setupTable(
+            {
+                //テーブル要素のID
+                tableElementID: "#USER-ACCOUNT-table-id",
+                //テーブル共通機能領域のサイズ(縦領域算出用)
+                tableCommonFunctionElementID: "#TableOperationFunctions",
+                //列左端　スクロール固定列数
+                leftScrollFixedColumns: 2,
+                //列のデフォルトカラムサイズ(省略可)
+                columnSize: [
+                    { width: '2rem', targets: 0 },
+                    { width: '2rem', targets: 1 }
+                ]
+            }
+        );
+    });
+
+    ///ソート用にヘッダをクリックした時の動作
+    var onHeaderClickForSort = function (columnName) {
+
+        VegaUtility.StaticFunctions.TableHelper.onTableHeaderClickForSort(
+            {
+                //ソート対象となる列名はhiddenフィールドに入れてサーバサイドに送り、
+                //サーバー側で処理させる。
+                //ソート対象の列名が入るinput要素名
+                sortOrderName: "#viewModel_sortColumn",
+                //ソートの方向 : ASC or DES
+                sortOrder: "#viewModel_sortDirection",
+                //post対象となるフォーム名
+                formName: "form",
+                //ソートするカラム名
+                columnName: columnName
+            });
+    };
+
+    //検索ボタンクリック
+    var onClickSearch = function () {
+        //件数が多いと検索処理に時間がかかるので、
+        //先にローディング表示を行う
+        VegaUtility.StaticFunctions.LoadingSplash.show();
+
+        //postする
+        var tForm = $('form');
+        tForm.submit();
+
+    }
+
+</script>
+
+
+<div class="p-page-title">
+    管理者メニュー/
+    <span>ユーザーアカウント</span>
+</div>
+<div id="Wrap">
+<form method="post" id="mainForm">
+    <article id="Account-user" class="p-main-wrap__2col">
+
+        <section>
+            <h1>検索条件</h1>
+
+            <article>
+                <article class="p-buttom-wrap">
+                    <button class="o-button__base" onclick="onClickSearch()">検索</button>
+                    @*クリアの場合は自分のページを再度Getする*@
+                    <a asp-page="AccountUser" class="o-button__clear">クリア</a>
+                </article>
+                <div class="o-border__bold"></div>
+                <div class="u-wrap-mb">
+                    <div class="p-datachip">
+                        <h1>ユーザーID</h1>
+                        <p>
+                            @{
+                                var isAnd_USER_ID_checked = "checked";
+                                if (null != Model.searchConditions)
+                                {
+                                    if (true == Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA)
+                                    {
+
+                                        isAnd_USER_ID_checked = "";
+                                    }
+                                }
+                            }
+
+                            <input type="text" asp-for="@Model.searchConditions.queryConditions.USER_ID" maxlength="30">
+                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_ID"> AND
+                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_ID"
+                                   @isAnd_USER_ID_checked>
+                            OR
+                        </p>
+                    </div>
+                    <div class="p-datachip">
+                        <h1> ユーザー名(カナ) </h1>
+                        <p>
+                            @{
+                                var isAnd_USER_NAME_KANAchecked = "checked";
+                                if (null != Model.searchConditions)
+                                {
+                                    if (true == Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA)
+                                    {
+
+                                        isAnd_USER_NAME_KANAchecked = "";
+                                    }
+                                }
+                            }
+
+                            <input type="text" asp-for="@Model.searchConditions.queryConditions.USER_NAME_KANA" maxlength="50" size="14">
+                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA"> AND
+                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA"
+                                   @isAnd_USER_NAME_KANAchecked>
+                            OR
+                        </p>
+                    </div>
+                    <div class="p-datachip">
+                        <h1>社名</h1>
+                        <p>
+                            @{
+                                var isAnd_COMPANYchecked = "checked";
+                                if (null != Model.searchConditions)
+                                {
+                                    if (true == Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA)
+                                    {
+
+                                        isAnd_COMPANYchecked = "";
+                                    }
+                                }
+                            }
+
+
+                            <input type="text" asp-for="@Model.searchConditions.queryConditions.COMPANY" maxlength="72">
+                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.isAnd_COMPANY"> AND
+                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.isAnd_COMPANY"
+                                   @isAnd_COMPANYchecked>
+                            OR
+                        </p>
+                    </div>
+                    <div class="p-datachip">
+                        <h1>荷主コード</h1>
+                        <p>
+                            <input type="text" asp-for="@Model.searchConditions.queryConditions.SHIPPER_CODE">
+                        </p>
+                    </div>
+                    <div class="p-datachip">
+                        <h1>権限</h1>
+                        <p>
+                            <select asp-for=@Model.searchConditions.AccountPermissions.selected asp-items="@Model.searchConditions.AccountPermissions.display"></select>
+                        </p>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section>
+            <article class="p-scroll__head" id="TableOperationFunctions">
+                <h1>表示件数</h1>
+
+                <article>
+                    <div class="p-buttom-wrap">
+                        <button type="submit" asp-page-handler="pdf" class="o-button__dl">印刷</button>
+                        <button type="submit" asp-page-handler="excel3" class="o-button__dl">EXCEL</button>
+                        <button type="submit" asp-page-handler="csv3" class="o-button__dl">CSV</button>
+                        <a asp-page="/AccountUserEdit" class="o-button__new">新規</a>
+                    </div>
+                    <div class="o-border__bold"></div>
+
+                    <article class="p-table-sort">
+                        <article class="u-wrap-mr d-flex">
+                            <div class="p-datachip">
+                                <h1>
+                                    表示件数
+                                </h1>
+                                <p>
+                                    <select asp-for=@Model.paginationInfo.displayNumber asp-items="Model.paginationInfo.displayNumbers"
+                                            onchange="onClickSearch()"></select>
+                                </p>
+                            </div>
+                        </article>
+                        <article>
+                            <article class="p-pager-num">
+                                <pagination-show-range info="@Model.paginationInfo"> </pagination-show-range>
+                            </article>
+                            <article>
+                                <pagination-pager info="@Model.paginationInfo" for="@Model.paginationInfo"> </pagination-pager>
+                            </article>
+                        </article>
+                    </article>
+                    <div class="o-border__bold__sm"></div>
+                </article>
+            </article>
+            <article class="p-scroll__body">
+
+                @* ソート関係の情報を保存 *@
+                @* ソート対象のカラム列名 *@
+                <input type="hidden" asp-for="@Model.viewModel.sortColumn" />
+                @* ソートの方向 ASC or DES *@
+                <input type="hidden" asp-for="@Model.viewModel.sortDirection" />
+
+                @*
+                    [tableデザインメモ]
+                    1. table要素を囲っているp-tableにおいて、max-widthを指定する事で横スクロールのスクロールバーが表示される。
+                    この時、max-width="9999px"に指定しておく事で表示可能な適切なサイズに表示が切り替えられる。
+                    2.p-tableの要素でmarginが指定されているが、data tables側のデザインと当たってうまく表示できないため、
+                    style="margin:0"で要素を上書きしてしまう。
+                *@
+                <div class="p-table" max-width="9999px">
+                    <table id="USER-ACCOUNT-table-id" class="table table-bordered" style="margin:0">
+                        <thead>
+                            <tr>
+                                <th style="width:3rem;">
+                                </th>
+                                <th style="width:4rem;">
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_PERMISSION">
+                                    権限
+                                </th>
+                                <th save-column-width-size-name='USER_ACCOUNT_SHIPPER_CODE'>
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_SHIPPER_CODE')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_SHIPPER_CODE")
+                                    </span>
+                                    荷主コード
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_USER_ID">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_USER_ID')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_USER_ID")
+                                    </span>
+                                    ユーザーID
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_USER_NAME">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_USER_NAME')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_USER_NAME")
+                                    </span>
+                                    ユーザー名
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_USER_NAME_KANA">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_USER_NAME_KANA')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_USER_NAME_KANA")
+                                    </span>
+                                    ユーザー名(カナ)
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_COMPANY">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_COMPANY')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_COMPANY")
+                                    </span>
+                                    社名
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_DEPARTMENT">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_DEPARTMENT')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_DEPARTMENT")
+                                    </span>
+                                    部課名
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_ADDRESS">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_ADDRESS')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_ADDRESS")
+                                    </span>
+                                    住所
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_TEL">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_TEL')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_TEL")
+                                    </span>
+                                    TEL
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_FAX">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_FAX')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_FAX")
+                                    </span>
+                                    FAX
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_MAIL">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_MAIL')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_MAIL")
+                                    </span>
+                                    メールアドレス
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_LOGINED_AT">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_LOGINED_AT')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_LOGINED_AT")
+                                    </span>
+                                    最終ログイン日時
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_PASSWORD_UPDATED_AT">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_PASSWORD_UPDATED_AT')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_PASSWORD_UPDATED_AT")
+                                    </span>
+                                    最終パスワード変更日時
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_LOGIN_ENABLE_FLAG">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_LOGIN_ENABLE_FLAG')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_LOGIN_ENABLE_FLAG")
+                                    </span>
+                                    アカウント状態
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_IS_PASSWORD_EXPIRATION">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_IS_PASSWORD_EXPIRATION')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_IS_PASSWORD_EXPIRATION")
+                                    </span>
+                                    パスワードを無期限に設定する
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_LOGIN_ENABLE_FLAG">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_LOGIN_ENABLE_FLAG')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_LOGIN_ENABLE_FLAG")
+                                    </span>
+                                    ログイン
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_TRANSPORT">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_TRANSPORT')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_TRANSPORT")
+                                    </span>
+                                    運送会社
+                                </th>
+                                <th save-column-width-size-name="USER_ACCOUNT_DEFAULT_DEPARTMENT">
+                                    <span onclick="onHeaderClickForSort('USER_ACCOUNT_DEFAULT_DEPARTMENT')">
+                                        @Model.viewModel.getTargetSortSign("USER_ACCOUNT_DEFAULT_DEPARTMENT")
+                                    </span>
+                                    デフォルト部課コード
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (null != Model.viewModel.tableRows)
+                            {
+                                @foreach (var (item, index) in Model.viewModel.tableRows.Select((item, index) => (item, index)))
+                                {
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <a asp-page="./AccountUserEdit"
+                                               asp-route-user="@item.data.data.USER_ID">
+                                                編集
+                                            </a>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a asp-page="./AccountUserEdit" asp-page-handler="copy"
+                                               asp-route-user="@item.data.data.USER_ID">
+                                                コピー
+                                            </a>
+                                        </td>
+
+                                        <td>
+                                            <div>
+                                                <!-- 権限 -->
+                                                @item.data.data.formattedPERMISSION()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- 荷主コード -->
+                                                @item.data.data.formattedCURRENT_SHIPPER_CODE()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- ユーザーID -->
+                                                @item.data.data.USER_ID
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- ユーザー名 -->
+                                                @item.data.data.NAME
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- ユーザー名(カナ) -->
+                                                @item.data.data.KANA
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!--社名  -->
+                                                @item.data.data.COMPANY
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- 部署名 -->
+                                                @item.data.data.DEPARTMENT
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- 住所 -->
+                                                @item.data.data.formattedADDRESS()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- TEL -->
+                                                @item.data.data.TEL
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- FAX -->
+                                                @item.data.data.FAX
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- MAIL -->
+                                                @item.data.data.MAIL
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- 最終ログイン日時 -->
+                                                @item.data.data.formattedLOGINED_AT()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- 最終パスワード変更日時 -->
+                                                @item.data.data.formattedPASSWORD_UPDATED_AT()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- アカウント状態 -->
+                                                @item.data.data.formattedIsPasswordExpiration()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- パスワードを無期限に設定する -->
+                                                @item.data.data.formattedEXPIRE_FLAG()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- ログイン -->
+                                                @item.data.data.formattedLOGIN_ENABLE_FLAG()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- 運送会社 -->
+                                                @item.data.data.formattedTRANSPORT_ADMIN_NAME()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <!-- デフォルト部課コード -->
+                                                @item.data.data.formattedDEFAULT_DEPARTMENT_CODE()
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+    </article>
+</form>
+
+</div>

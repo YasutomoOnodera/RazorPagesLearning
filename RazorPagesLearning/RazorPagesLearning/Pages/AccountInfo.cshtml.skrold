@@ -1,0 +1,333 @@
+﻿@page
+@model RazorPagesLearning.Pages.AccountInfoModel
+@{
+    ViewData["Title"] = "AccountInfo";
+}
+
+<form method="POST" id="AccountInfoForm">
+
+    @* データ同期検知用の文字列 *@
+    <input type="hidden" asp-for="@Model.viewModel.collisionDetectionTimestamp">
+
+    <!-- 本文 -->
+    <article id="Account-info" class="p-main-wrap">
+        <section>
+
+            <!-- エラーメッセージ表示 -->
+            @if (null != Model.viewModel.errorMessage)
+            {
+                <div class="alert alert-danger" role="alert">
+
+                    @foreach (var ele in Model.viewModel.errorMessage)
+                    {
+                        <p>
+                            @ele
+                        </p>
+                    }
+
+                </div>
+            }
+
+            <div class="p-page-title">
+                <span>アカウント情報管理</span>
+            </div>
+
+            <section>
+                <h1>アカウント管理</h1>
+                <article>
+
+                    <article class="p-buttom-wrap">
+                        <!-- 更新ボタン -->
+                        <button type="button" class="o-button__done" id="confirmRegistrationButton">更新</button>
+                    </article>
+
+                    <div class="o-border__bold"></div>
+                    <article class="d-flex justify-content-between p-4">
+                        <div style="width: 45%;">
+
+                            <h1 class="o-title__blank__sub">基本情報</h1>
+
+                            <div class="p-form-list">
+                                <h1>ユーザーID</h1>
+                                <div class="off">
+                                    <input class="off" asp-for="@Model.viewModel.USER_ACCOUNT.USER_ID" readonly>
+                                </div>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>ユーザー名</h1>
+                                <div class="off">
+                                    <input class="off" asp-for="@Model.viewModel.USER_ACCOUNT.NAME" readonly>
+                                </div>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>ユーザー名(カナ)</h1>
+                                <div class="off">
+                                    <input class="off" asp-for="@Model.viewModel.USER_ACCOUNT.KANA" readonly>
+                                </div>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>社名</h1>
+                                <p>
+                                    <input placeholder="文字72字" asp-for="@Model.viewModel.USER_ACCOUNT.COMPANY">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.COMPANY" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>部署名</h1>
+                                <div>
+                                    <input asp-for="@Model.viewModel.USER_ACCOUNT.DEPARTMENT">
+                                </div>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.DEPARTMENT" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>郵便番号</h1>
+                                <section class="d-flex">
+                                    <div class="e-flex-grow-1">
+                                        <input placeholder="半角数字8桁" asp-for="@Model.viewModel.USER_ACCOUNT.ZIPCODE">
+                                    </div>
+                                    <!-- 入力された郵便番号を元に住所を表示する -->
+                                    <button type="button" class="o-button__base ml-3"
+                                            onclick="AjaxZip3.zip2addr('viewModel.USER_ACCOUNT.ZIPCODE','','viewModel.USER_ACCOUNT.ADDRESS1','viewModel.USER_ACCOUNT.ADDRESS2');">
+                                        住所を表示
+                                    </button>
+                                    <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.ZIPCODE" class="text-danger"></span>
+                                </section>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>住所1</h1>
+                                <p>
+                                    <input placeholder="文字72字" asp-for="@Model.viewModel.USER_ACCOUNT.ADDRESS1">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.ADDRESS1" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>住所2</h1>
+                                <p>
+                                    <input placeholder="文字72字" asp-for="@Model.viewModel.USER_ACCOUNT.ADDRESS2">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.ADDRESS2" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>TEL</h1>
+                                <p>
+                                    <input placeholder="半角数字14桁" asp-for="@Model.viewModel.USER_ACCOUNT.TEL">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.TEL" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>FAX</h1>
+                                <p>
+                                    <input placeholder="半角数字14桁"asp-for="@Model.viewModel.USER_ACCOUNT.FAX">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.FAX" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス</h1>
+                                <p>
+                                    <input placeholder="半角英数字50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>デフォルト集配先コード</h1>
+                                <section class="d-flex">
+                                    <section class="e-flex-grow-1 d-flex">
+                                        <div class="e-flex-grow-1">
+                                        </div>
+                                        <div class="off">
+                                            <span><input class="off" placeholder="文字8字" asp-for="@Model.viewModel.USER_ACCOUNT.DEFAULT_DELIVERY_ADMIN_ID" readonly></span> <!-- 集配先名が入る -->
+                                        </div>
+                                    </section>
+                                    <button type="button" class="o-button__base ml-3" onclick="onShowPopSelectDerivery()">集荷先選択</button>
+                                    <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.DEFAULT_DELIVERY_ADMIN_ID" class="text-danger"></span>
+                                </section>
+                            </div>
+                        </div>
+
+                        <div style="width: 45%;">
+                            <h1 class="o-title__blank__sub">同時配信メール</h1>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス1</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL1">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL1" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス2</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL2">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL2" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス3</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL3">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL3" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス4</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL4">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL4" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス5</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL5">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL5" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス6</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL6">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL6" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス7</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL7">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL7" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス8</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL8">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL8" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス9</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL9">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL9" class="text-danger"></span>
+                            </div>
+
+                            <div class="p-form-list">
+                                <h1>メールアドレス10</h1>
+                                <p>
+                                    <input placeholder="半角英数50文字" asp-for="@Model.viewModel.USER_ACCOUNT.MAIL10">
+                                </p>
+                                <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL10" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </article>
+                </article>
+            </section>
+
+        </section>
+    </article>
+
+    <!--　[開始] 集配先選択モーダル画面 -->
+    <partial name="PopUp/_PopSelectDerivery" for="@Model.selectDeriveryModelViewModel" />
+
+</form>
+
+<!--　[終了] 集配先選択モーダル画面 -->
+<!-- 郵便番号読み取りライブラリをロード -->
+<script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+
+<!-- バリデーションライブラリをロード -->
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+
+<!-- 登録確認ライブラリをロード -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+<script>
+
+    (function () {
+
+        //バリデーションチェックをして問題ない場合、登録を行う
+        $('#confirmRegistrationButton').click(function () {
+            var isTargetValid = $('#AccountInfoForm').valid();
+            if (true == isTargetValid) {
+
+                //送信関数
+                var postFunc = function () {
+
+                    VegaUtility.StaticFunctions.PopUp.show();
+                    var tForm = $('form');
+                    tForm.attr('action', '?handler=Save');
+                    tForm.submit();
+
+                 };
+
+                if (true == VegaUtility.StaticFunctions.ConfirmationDialog.isNeedShow()) {
+                    $.confirm({
+                        title: '更新確認',
+                        content: 'ユーザーアカウント情報を更新してもよろしいでしょうか?',
+                        buttons: {
+                            'OK': function () {
+                                //該当フォームに対して登録命令を出す
+                                postFunc();
+                            },
+                            'キャンセル': function () {
+                            }
+                        }
+                    });
+                }
+                else { 
+                    postFunc();
+                }
+            }
+            else {
+
+                $.alert({
+                    title: '確認',
+                    content: '入力間違えを修正してください。',
+                });
+            }
+        });
+    })();
+
+    //集配先選択ポップアップを表示
+    var onShowPopSelectDerivery = function () {
+        VegaUtility.StaticFunctions.PopUp.show("#modal-cargo__select");
+    }
+
+    //ページロード時
+    $(document).ready(function () {
+
+        var m = $("[ id$=isShowModal]").val();
+        if (true == VegaUtility.StaticFunctions.Helpers.parseBoolean(m)) {
+
+            //モーダル表示中だったら、モーダルを表示する
+            onShowPopSelectDerivery();
+
+        }
+
+        //ページを開いたら、ローディング表示を非表示に
+        VegaUtility.StaticFunctions.LoadingSplash.hide();
+
+    });
+
+</script>

@@ -1,0 +1,251 @@
+﻿@page
+@model RazorPagesLearning.Pages.DeliveryModel
+@{
+    ViewData["Title"] = "Delivery";
+}
+
+<script>
+
+    //ページロード時
+    $(document).ready(function () {
+
+        var m = $("[ id$=isShowModal]").val();
+        if (true == VegaUtility.StaticFunctions.Helpers.parseBoolean(m)) {
+
+            //モーダル表示中だったら、モーダルを表示する
+            VegaUtility.StaticFunctions.PopUp.show("#modal-shipper-car_number");
+
+        }
+
+        //ページを開いたら、ローディング表示を非表示に
+        VegaUtility.StaticFunctions.LoadingSplash.hide();
+    });
+
+    ///ソート用にヘッダをクリックした時の動作
+    var onHeaderClickForSort = function (columnName) {
+
+        VegaUtility.StaticFunctions.TableHelper.onTableHeaderClickForSort(
+            {
+                //ソート対象となる列名はhiddenフィールドに入れてサーバサイドに送り、
+                //サーバー側で処理させる。
+                //ソート対象の列名が入るinput要素名
+                sortOrderName: "#viewModel_sortColumn",
+                //ソートの方向 : ASC or DES
+                sortOrder: "#viewModel_sortDirection",
+                //post対象となるフォーム名
+                formName: "form",
+                //ソートするカラム名
+                columnName: columnName
+            });
+    };
+
+    //ステータス列をクリック
+    var onStatusClick = function (DELIVERY_REQUEST_NUMBER, TRANSPORT_ADMIN_CODE) {
+
+        //隠しを表示
+        VegaUtility.StaticFunctions.LoadingSplash.show();
+
+        //サーバーと連携する文字列を指定された形式で更新しておく
+        (function () {
+
+            $('#viewModel_clickedInformation_DELIVERY_REQUEST_NUMBER').val(DELIVERY_REQUEST_NUMBER);
+            $('#viewModel_clickedInformation_TRANSPORT_ADMIN_CODE').val(TRANSPORT_ADMIN_CODE);
+
+        })();
+
+        //サーバへ送信する
+        (function () {
+
+            var tForm = $('form');
+            tForm.attr('action', '?handler=OnStatusClick');
+            tForm.submit();
+
+        })();
+    }
+
+    //ダウンロード列をクリック
+    var onExportedDilesClick = function (DELIVERY_REQUEST_NUMBER, TRANSPORT_ADMIN_CODE) {
+
+        //サーバーと連携する文字列を指定された形式で更新しておく
+        (function () {
+
+            $('#viewModel_clickedInformation_DELIVERY_REQUEST_NUMBER').val(DELIVERY_REQUEST_NUMBER);
+            $('#viewModel_clickedInformation_TRANSPORT_ADMIN_CODE').val(TRANSPORT_ADMIN_CODE);
+
+        })();
+
+        //サーバへ送信する
+        (function () {
+
+            var tForm = $('form');
+            tForm.attr('action', '?handler=ExportedDiles');
+            tForm.submit();
+
+        })();
+    }
+
+    //運送会社番号が変化した場合
+    var onSelectChange = function () { 
+
+        //アクション処理がついている場合があるのでつぶす
+        var tForm = $('form');
+        tForm.attr('action', '');
+        tForm.submit();
+
+    }
+
+</script>
+
+<div class="p-page-title">
+    運送会社メニュー/
+    <span>自社便用集荷配送依頼</span>
+</div>
+
+<article id="Calendar" class="p-main-wrap" style="height:100%;">
+    <form method="post" id="mainForm" style="height:90%;">
+        <section  style="height:100%;">
+            <h1 class="title">ステータス選択</h1>
+            <article  style="height:100%;">
+                <div class="d-flex">
+                    <div class="p-datachip d-inline-flex mr-3">
+                        <h1>
+                            運送会社コード
+                        </h1>
+                        <p>
+                            <select asp-for=@Model.viewModel.transportAdmins.selected
+                                    asp-items="@Model.viewModel.transportAdmins.display"
+                                    onchange="onSelectChange()"></select>
+                        </p>
+                    </div>
+                </div>
+                <div class="o-border__bold"></div>
+
+                <!-- エラーメッセージ表示 -->
+                @if ((null != Model.viewModel.errorMessage) &&
+           (String.Empty != Model.viewModel.errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+
+                        @Model.viewModel.errorMessage
+
+                    </div>
+                }
+
+                @* ポップアップ表示用の選択済み列情報 *@
+                <input type="hidden" asp-for="@Model.viewModel.clickedInformation.DELIVERY_REQUEST_NUMBER" />
+                <input type="hidden" asp-for="@Model.viewModel.clickedInformation.TRANSPORT_ADMIN_CODE" />
+
+                @* ポップアップ表示判定 *@
+                <input type="hidden"
+                       value="@Model.deliveryCarNumberSetting.viewModel.isShowModal"
+                       asp-for="@Model.deliveryCarNumberSetting.viewModel.isShowModal" />
+
+                @* ソート関係の情報を保存 *@
+                @* ソート対象のカラム列名 *@
+                <input type="hidden" asp-for="@Model.viewModel.sortColumn" />
+                @* ソートの方向 ASC or DES *@
+                <input type="hidden" asp-for="@Model.viewModel.sortDirection" />
+
+                <div class="p-table" style="overflow: scroll; height:100%;">
+                    <table>
+                        <thead>
+                        <th style="width: 12rem;">
+                            <span onclick="onHeaderClickForSort('DELIVERY_STATUS')">
+                                @Model.viewModel.getTargetSortSign("DELIVERY_STATUS")
+                            </span>
+                            ステータス
+                        </th>
+                        <th>
+                            <span onclick="onHeaderClickForSort('DELIVERY_DELIVERY_DATE')">
+                                @Model.viewModel.getTargetSortSign("DELIVERY_DELIVERY_DATE")
+                            </span>
+                            集配日
+                        </th>
+                        <th>
+                            <span onclick="onHeaderClickForSort('DELIVERY_CONFIRM_DATETIME')">
+                                @Model.viewModel.getTargetSortSign("DELIVERY_CONFIRM_DATETIME")
+                            </span>
+                            確定日時
+                        </th>
+                        <th style="width:9rem;">
+                            運転日報/はい表
+                        </th>
+                        <th>
+                            <span onclick="onHeaderClickForSort('DELIVERY_CORRECTION_DATETIME')">
+                                @Model.viewModel.getTargetSortSign("DELIVERY_CORRECTION_DATETIME")
+                            </span>
+                            実績修正日時
+                        </th>
+                        </thead>
+                        <tbody>
+                            @* 要素を表示 *@
+                            @if (null != Model.viewModel.tableRows)
+                            {
+                                @foreach (var (item, index) in Model.viewModel.tableRows.Select((item, index)
+                             => (item, index)))
+                                {
+                                    <tr>
+                                        <td>
+                                            @* ステータス *@
+                                            <div>
+                                                @{
+                                                    var statInfo = item.data.formattedSTATUS();
+
+                                                    //ステータスに応じてクリックできる/出来ないが切り替わる
+                                                    var onclickStr = "";
+                                                    if (statInfo.deliveryStatus == RazorPagesLearning.Service.DB.DeliveryRequestService.DeliveryStatus.入力可能 ||
+                                                        statInfo.deliveryStatus == RazorPagesLearning.Service.DB.DeliveryRequestService.DeliveryStatus.確定済み)
+                                                    {
+                                                        onclickStr =
+                                                             $"onStatusClick( '{@item.data.DELIVERY_REQUEST_NUMBER}' , '{@item.data.TRANSPORT_ADMIN_CODE}' ) ";
+                                                    }
+                                                }
+
+                                                <a class="@statInfo.classString"
+                                                   style="color: white;"
+                                                   onclick="@Html.Raw(onclickStr)">
+                                                    <span>
+                                                        @statInfo.viewString
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @* 集配日 *@
+                                            <div>@item.data.FormattedDELIVERY_DATE()</div>
+                                        </td>
+                                        <td>
+                                            @* 確定日時*@
+                                            <div>@item.data.FormattedCONFIRM_DATETIME()</div>
+                                        </td>
+                                        <td>
+                                            @* 日報/はい表 *@
+                                            @if (statInfo.deliveryStatus == RazorPagesLearning.Service.DB.DeliveryRequestService.DeliveryStatus.確定済み)
+                                            {
+                                                <div>
+                                                    <a class="dl"
+                                                            onclick="onExportedDilesClick( '@item.data.DELIVERY_REQUEST_NUMBER' , '@item.data.TRANSPORT_ADMIN_CODE' )">
+                                                        <img src="../img/icon-download.svg" alt="" width="15">ダウンロード
+                                                    </a>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>
+                                            @* 実績修正日時 *@
+                                            <div>@item.data.FormattedCORRECTION_DATETIME()</div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <!--　[開始] 車番号選択画面 -->
+        <partial name="PopUp/_PopDeliveryCarNumberSetting" for="@Model.deliveryCarNumberSetting" />
+
+    </form>
+</article>

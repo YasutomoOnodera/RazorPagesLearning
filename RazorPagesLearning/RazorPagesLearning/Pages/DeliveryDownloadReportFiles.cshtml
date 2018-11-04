@@ -1,0 +1,19 @@
+﻿@page
+@model RazorPagesLearning.Pages.DeliveryDownloadReportFilesModel
+@{
+    ViewData["Title"] = "DeliveryDownloadReportFiles";
+    Layout = null;
+}
+
+<h2>運転日報/はい表 ダウンロード</h2>
+
+<!-- エラーメッセージ表示 -->
+@if ((null != Model.errorMessage) &&
+(String.Empty != Model.errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+
+        ファイル生成失敗 : @Model.errorMessage
+
+    </div>
+}

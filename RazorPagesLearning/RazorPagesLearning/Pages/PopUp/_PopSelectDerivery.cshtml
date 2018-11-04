@@ -1,0 +1,299 @@
+﻿@model RazorPagesLearning.Pages.PopUp.SelectDeriveryModel.ViewModel
+
+<!-- 集配先選択モーダル画面 -->
+<section class="modal-window" id="modal-cargo__select">
+    <div class="modal-inner p-modal">
+
+            <!-- モーダル画面表示判定フラグ -->
+
+            <input type="hidden" asp-for="@Model.isShowModal" value="@Model.isShowModal" readonly>
+
+            <article class="p-modal__title">
+                <h1 class="o-plate__title">集配先選択</h1>
+                <div class="p-modal__grobal__nav">
+                    <button type="button">
+                        <a href="#!" type="button " class="o-button__close"></a>
+                    </button>
+                </div>
+            </article>
+            <article class="p-modal__contents">
+                <article id="Message" class="p-main-wrap__2col">
+                    <section>
+                        <h1>検索条件</h1>
+                        <article class="u-wrap-mb">
+                            <div class=" p-buttom-wrap">
+                                <button type="button" asp-page-handler="SearchSelectDerivery" class="o-button__base" name="search" data-event="search">検索</button>
+                                <button type="button" class="o-button__clear">クリア</button>
+                            </div>
+                            <div class="o-border__bold"></div>
+                            <div class="p-datachip">
+                                <h1>
+                                    社名
+                                </h1>
+                                <p>
+                                    <input asp-for="@Model.json.company" maxlength="40" size="14">
+                                    <input type="radio" name="test" value="1" checked="checked" asp-for="@Model.json.condition">
+                                    <span>AND</span>
+                                    <input type="radio" name="test" value="0" checked="">
+                                    <span>OR</span>
+                                </p>
+                            </div>
+                            <div class="p-datachip border-clear grow-none">
+                                <p>
+                                    全ての集配先を表示する
+                                </p>
+                                <p>
+                                    <input type="checkbox" asp-for="@Model.json.dispCond">
+                                </p>
+                            </div>
+                        </article>
+                    </section>
+                    <section class="h-100">
+                        <h1>検索結果</h1>
+                        <article>
+                            <div class="c-o-plate__message">集荷先を選択してください</div>
+                            <div class="mt-2"></div>
+                            <article class="p-table-sort">
+                                <article class="u-wrap-mr">
+                                    <div class="p-datachip">
+                                        <h1>
+                                            表示件数
+                                        </h1>
+                                        <p>
+                                            <select name="dispCount">
+                                                <option value="100">100</option>
+                                                <option value="200">200</option>
+                                                <option value="300">300</option>
+                                            </select>
+                                        </p>
+                                    </div>
+                                </article>
+                                <article>
+                                    <article class="p-pager-num-popup" style="display:none;">
+                                        <p>
+                                            <span name="itemCount">1~100</span>
+                                            <span name="searchCount">/1000 件</span>
+                                        </p>
+                                    </article>
+                                    <article>
+                                        <ul class="p-pager" id="pagination"></ul>
+                                    </article>
+                                </article>
+                            </article>
+                            <div class="o-border__bold__sm"></div>
+                            <div class="p-table">
+                                <table name="demoTableA" class="table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:4rem;">
+                                            </th>
+                                            <th name="searchOrder" data-order="0">●集配先コード</th>
+                                            <th name="searchOrder" data-order="1">●社名</th>
+                                            <th name="searchOrder" data-order="2">●部課名</th>
+                                            <th name="searchOrder" data-order="3">●担当者名</th>
+                                            <th name="searchOrder" data-order="4">●住所</th>
+                                            <th name="searchOrder" data-order="5">●TEL</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="search_list">
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </article>
+                    </section>
+                </article>
+            </article>
+    </div>
+    <a href="#! " class="modal-close">×</a>
+</section>
+
+<script type="text/javascript">
+    var isSearch = 0;
+
+
+    var _companyName = "";
+    var _andCondition = 1;
+    var _dispCondition = 0;
+
+    var _viewCount = 1;
+    var _startCount = 1;
+    var _endCount = 100;
+
+    var _pageNumber = 1;
+    var _orderKey = 0;
+    var _order = 0;
+
+    function searchFunc()
+    {
+        _companyName = $("#selectDeriveryModelViewModel_json_company").val();
+        _andCondition = $("#selectDeriveryModelViewModel_json_condition").val();
+        if (true == $("#selectDeriveryModelViewModel_json_dispCond").prop("checked")) {
+            _dispCondition = 1;
+        }
+        else {
+            _dispCondition = 0;
+        }
+
+
+        $.ajax({
+            url: "/Json?Handler=SelectDelivery&companyName="
+                + _companyName + "&andCondition=" + _andCondition + "&dispCondition=" + _dispCondition
+                + "&viewCount=" + _viewCount + "&pageNumber=" + _pageNumber + "&orderKey=" + _orderKey + "&order=" + _order,
+            type: 'GET',
+            success: function (data) {
+                // レスポンス情報を設定
+                _startCount = _pageNumber + ((_pageNumber - 1) * _viewCount);
+                _endCount = data.itemCount + ((_pageNumber - 1) * _viewCount);
+
+                $("[class='p-pager-num-popup']").attr("style", "display:block");
+                $("[name='itemCount']").text(_startCount + "~" + _endCount);
+                $("[name='searchCount']").text("/" + data.count + "件");
+                $(".search_list").html(data.tableStr);
+
+                // ページャの設定
+                totalPages = (data.itemCount / _viewCount);
+                if (totalPages < 1) {
+                    totalPages = 1;
+                }
+                $('#pagination').twbsPagination({
+                    totalPages: totalPages,
+                    visiblePages: 5,
+                    onPageClick: function (event, page) {
+                        // ページャで同じページイベントが来たら無視する
+                        if (_pageNumber == page) {
+                            return;
+                        }
+                        _pageNumber = page;
+                        $.ajax({
+                            url: "/Json?Handler=SelectDelivery&companyName="
+                                + _companyName + "&andCondition=" + _andCondition + "&dispCondition=" + _dispCondition
+                                + "&viewCount=" + _viewCount + "&pageNumber=" + _pageNumber + "&orderKey=" + _orderKey + "&order=" + _order,
+                            type: 'GET',
+                            success: function (data) {
+                                // レスポンス情報を設定
+                                _startCount = 1 + ((_pageNumber - 1) * _viewCount);
+                                _endCount = data.itemCount + ((_pageNumber - 1) * _viewCount);
+                                $("[class='p-pager-num-popup']").attr("style", "display:block");
+                                _endCount = data.itemCount;
+                                $("[name='itemCount']").text(_startCount + "~" + _endCount);
+                                $("[name='searchCount']").text("/" + data.count + "件");
+                                $(".search_list").html(data.tableStr);
+                            },
+                            error: function (data) {
+                                // TODO アラートダイアログを変更する
+                                alert("error!!!");
+
+                            }
+                        });
+                    }
+                }).on('page', function (event, page) {
+                    console.info(page + ' (from event listening)');
+                });
+
+            },
+            error: function (data) {
+                // TODO アラートダイアログを変更する
+                alert("error!!!");
+
+            }
+
+        });
+
+    }
+
+
+    $("[name='search']").click(function () {
+        // 検索条件の設定
+        _pagerNumber = 1;
+        _startCount = 1;
+        _orderKey = 1;
+        _order = 0;
+
+        // 検索実施
+        searchFunc();
+
+        // 検索実施（表示件数、ソート順変更時も検索有効にする）
+        isSearch = 1;
+
+    });
+
+    $("[name='dispCount']").change(function () {
+        // 検索条件の設定
+        _viewCount = $(this).val();
+
+        if (isSearch) {
+            // 検索実施
+            searchFunc();
+        }
+    });
+
+    $("[name='searchOrder']").click(function () {
+        // ページ番号を１に戻す
+        _pageNumber = 1;
+        var orderKey = $(this).data('order');
+
+        if (_orderKey == orderKey) {
+            // 昇順、降順を反転
+            _order = (_order === 0) ? 1 : 0;
+        }
+        else {
+            // オーダーキーの変更
+            _orderKey = orderKey;
+            _order = 0;
+        }
+
+        $("[name='demoTableA']").find("[name='searchOrder']").each(function (index, element) {
+
+            //ソート順序がついていたら外す
+            $(this).text($(this).text().replace('▲', ''));
+            $(this).text($(this).text().replace('▼', ''));
+            $(this).text($(this).text().replace('●', ''));
+
+            if (index === _orderKey) {
+                if (_order === 0) {
+                    $(this).text('▲' + $(this).text());
+                }
+                else {
+                    $(this).text('▼' + $(this).text());
+                }
+            }
+            else
+            {
+                //非選択の場合●をつける
+                $(this).text('●' + $(this).text());
+             }
+        });
+
+        if (isSearch) {
+            searchFunc();
+        }
+    });
+
+    $(document).on('click', '[name="select"]', function (event) {
+        event.preventDefault();
+
+        let _table = $(this).parent().parent();
+        @* 作業依頼指示(集配先選択)へ反映 *@
+        $("[id='searchMwlDeliveryId']").val(_table.find('[name="mwlDeliveryId"]').val()).change();
+        $("[id='searchDestCode']").text(_table.find('[name="delivery_code"]').text());
+        $("[id='searchCompany']").text(_table.find('[name="company"]').text());
+        $("[id='searchDepartment']").text(_table.find('[name="department"]').text());
+        $("[id='searchCharge']").text(_table.find('[name="charge"]').text());
+        $("[id='searchZipCode']").text(_table.find('[name="zipcode"]').val());
+        $("[id='searchAddress']").text(_table.find('[name="address"]').text());
+        $("[id='searchTel']").text(_table.find('[name="tel"]').text());
+
+        @*作業依頼一覧へ反映*@
+        $("[name='viewModel.searchCondition.dispSetting[集配先コード].textFrom']").val(_table.find('[name="delivery_code"]').text());
+
+        //集配先選択ポップアップを表示
+        VegaUtility.StaticFunctions.PopUp.show("#Serch-terms");
+
+        $("[ id$=isShowModal]").val("false");
+
+        return false;
+    });
+
+</script>

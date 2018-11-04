@@ -1,0 +1,355 @@
+﻿@page
+@model RazorPagesLearning.Pages.DeliveryCarModel
+@{
+    ViewData["Title"] = "車番入力";
+}
+
+<script>
+
+    //ページロード時
+    $(document).ready(function () {
+
+        var m = $("[ id$=isShowModal]").val();
+        if (true == VegaUtility.StaticFunctions.Helpers.parseBoolean(m)) {
+
+            //モーダル表示中だったら、モーダルを表示する
+            VegaUtility.StaticFunctions.PopUp.show("#modal-shipper-car_number");
+
+        }
+
+        //ページを開いたら、ローディング表示を非表示に
+        VegaUtility.StaticFunctions.LoadingSplash.hide();
+    });
+
+    ///ソート用にヘッダをクリックした時の動作
+    var onHeaderClickForSort = function (columnName) {
+
+        VegaUtility.StaticFunctions.TableHelper.onTableHeaderClickForSort(
+            {
+                //ソート対象となる列名はhiddenフィールドに入れてサーバサイドに送り、
+                //サーバー側で処理させる。
+                //ソート対象の列名が入るinput要素名
+                sortOrderName: "#viewModel_sortColumn",
+                //ソートの方向 : ASC or DES
+                sortOrder: "#viewModel_sortDirection",
+                //post対象となるフォーム名
+                formName: "form",
+                //ソートするカラム名
+                columnName: columnName
+            });
+    };
+
+    //ポップアップ表示画面押下
+    var onModalShipperCarNumberShow = function () {
+
+        //モーダル表示中だったら、モーダルを表示する
+        VegaUtility.StaticFunctions.PopUp.show("#modal-shipper-car_number");
+
+    };
+
+    //MWLに対して修正依頼を送信する
+    var onPostModificationRequest = function () {
+
+        var postFunc = function () {
+            VegaUtility.StaticFunctions.LoadingSplash.show();
+            var tForm = $('form');
+            tForm.attr('action', '?handler=ModificationRequest');
+            tForm.submit();
+        };
+
+        if (true == VegaUtility.StaticFunctions.ConfirmationDialog.isNeedShow()) {
+
+            $.confirm({
+                title: '確認',
+                content: '修正依頼を行います。',
+                buttons: {
+                    'はい': function () {
+                        //該当フォームに対して登録命令を出す
+                        postFunc();
+                    },
+                    'いいえ': function () {
+                    }
+                }
+            });
+        }
+        else {
+            //確認ダイアログを表示する必要なし
+
+            //該当フォームに対して登録命令を出す
+            postFunc();
+        }
+    }
+
+
+    //車番を保存する
+    var onSave = function () {
+
+        var postFunc = function () {
+            VegaUtility.StaticFunctions.LoadingSplash.show();
+            var tForm = $('form');
+            tForm.attr('action', '?handler=Save');
+            tForm.submit();
+        };
+
+        if (true == VegaUtility.StaticFunctions.ConfirmationDialog.isNeedShow()) {
+
+            $.confirm({
+                title: '確認',
+                content: '保存しますか?',
+                buttons: {
+                    'はい': function () {
+                        //該当フォームに対して登録命令を出す
+                        postFunc();
+                    },
+                    'いいえ': function () {
+                    }
+                }
+            });
+        }
+        else {
+            //確認ダイアログを表示する必要なし
+
+            //該当フォームに対して登録命令を出す
+            postFunc();
+        }
+    }
+
+</script>
+
+<div class="p-page-title">
+    自社便用集荷配送依頼/
+    <span>車番入力</span>
+</div>
+<article id="Calendar" class="p-main-wrap">
+
+    <form method="post" id="mainForm">
+        <section>
+            <h1 class="title">車番入力</h1>
+            <article>
+                @if (Model.isConfirmedStatus() == false)
+                {
+                    <div class="p-buttom-wrap mb-2">
+                        <div onclick="onPostModificationRequest()" class="o-button__modi" style="margin:0;">修正依頼</div>
+                    </div>
+                }
+                    <div class="o-border__bold__sm"></div>
+                    <div class="p-buttom-wrap">
+                        @if (Model.isConfirmedStatus() == true)
+                        {
+                            <button type="submit" class="o-button__dl__2row" asp-page-handler="ExportedDiles" >運転日報/はい表</button>
+                        }
+
+                        @if (Model.isConfirmedStatus() == false)
+                        {
+                            <div onclick="onModalShipperCarNumberShow()" class="o-button__base mr-4">車番設定</div>
+                            <div type="submit" class="o-button__done" style="margin-right:0.5rem" onclick="onSave()">保存</div>
+                            <button type="submit" class="o-button__base__2row" asp-page-handler="MoveToRouteEdit">ルート入力へ</button>
+                        }
+                        <a asp-page="Delivery" class="o-button__base" style="margin-right: 0;">一覧に戻る</a>
+                    </div>
+
+                    <!-- エラーメッセージ表示 -->
+                    @if ((null != Model.viewModel.errorMessage) &&
+                 (String.Empty != Model.viewModel.errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+
+                            @Model.viewModel.errorMessage
+
+                        </div>
+                    }
+
+                    @* ポップアップ表示用の選択済み列情報 *@
+                    <input type="hidden" asp-for="@Model.viewModel.filteringConditions.DELIVERY_REQUEST_NUMBER" />
+                    <input type="hidden" asp-for="@Model.viewModel.filteringConditions.TRANSPORT_ADMIN_CODE" />
+
+                    @* ポップアップ表示判定 *@
+                    <input type="hidden"
+                           value="@Model.deliveryCarNumberSetting.viewModel.isShowModal"
+                           asp-for="@Model.deliveryCarNumberSetting.viewModel.isShowModal" />
+
+                    @* ソート関係の情報を保存 *@
+                    @* ソート対象のカラム列名 *@
+                    <input type="hidden" asp-for="@Model.viewModel.sortColumn" />
+                    @* ソートの方向 ASC or DES *@
+                    <input type="hidden" asp-for="@Model.viewModel.sortDirection" />
+
+                    <div class="o-border__bold"></div>
+                    <div class="p-table mt-3">
+                        <table class="table-bordered">
+                            <thead>
+                            <th style="width:2.5rem;">No</th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('TRUCK_MANAGE_NUMBER')">
+                                    @Model.viewModel.getTargetSortSign("TRUCK_MANAGE_NUMBER")
+                                </span>
+                                車番
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('ROUTE')">
+                                    @Model.viewModel.getTargetSortSign("ROUTE")
+                                </span>
+                                ルート
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('COMPANY')">
+                                    @Model.viewModel.getTargetSortSign("COMPANY")
+                                </span>
+                                集配先会社名
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('COMPANY')">
+                                    @Model.viewModel.getTargetSortSign("COMPANY")
+                                </span>
+                                配達品名数量
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('DELIVERY_NOTE')">
+                                    @Model.viewModel.getTargetSortSign("DELIVERY_NOTE")
+                                </span>
+                                配達備考
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('DELIVERY_AC')">
+                                    @Model.viewModel.getTargetSortSign("DELIVERY_AC")
+                                </span>
+                                配達A/C先
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('CARGO_TITLE')">
+                                    @Model.viewModel.getTargetSortSign("CARGO_TITLE")
+                                </span>
+                                集荷品名数量
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('CARGO_NOTE')">
+                                    @Model.viewModel.getTargetSortSign("CARGO_NOTE")
+                                </span>
+                                集荷備考
+                            </th>
+                            <th>
+                                <span onclick="onHeaderClickForSort('CARGO_AC')">
+                                    @Model.viewModel.getTargetSortSign("CARGO_AC")
+                                </span>
+                                集荷A/C先
+                            </th>
+                            </thead>
+                            <tbody>
+                                @* 要素を表示 *@
+                                @if (null != Model.viewModel.tableRows)
+                                {
+
+
+                                    var disabled = "";
+                                    if (true == Model.isConfirmedStatus())
+                                    {
+                                        disabled = "disabled=disabled";
+                                    }
+
+
+                                    @foreach (var (item, index) in Model.viewModel.tableRows.Select((item, index)
+=> (item, index)))
+                                    {
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                @*No*@
+                                                @(index + 1)
+                                            </td>
+                                            <td style="background-color: #fff;">
+                                                @*車番*@
+
+
+                                                @*
+                                                                        [Memo]
+                                asp-itemsの場合、サーバー側のモデルでにおいてデータ変更した場合、画面上の値が反映されない。
+                                                                        このため、式を手展開した形式で代用する
+                                <select asp-for="viewModel.tableRows[index].data.selectableCars.selected"
+                                        asp-items="Model.viewModel.tableRows[index].data.selectableCars.display"></select>
+                                                *@
+                                                <select name=@($"viewModel.tableRows[{index}].data.selectableCars.selected")
+                                                        id=@($"viewModel_tableRows_{index}__data_selectableCars_selected")
+                                                        @disabled>
+                                                    @foreach (var ele in Model.viewModel.tableRows[index].data.selectableCars.display)
+                                                    {
+                                                        if (Model.viewModel.tableRows[index].data.selectableCars.selected == ele.Value)
+                                                        {
+                                                            <option selected="selected" value="@ele.Value">@ele.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@ele.Value">@ele.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                @*ルート*@
+                                                @Model.viewModel.tableRows[index].data.info.ROUTE
+                                            </td>
+                                            <td>
+                                                @*集配先会社名*@
+                                                @Model.viewModel.tableRows[index].data.info.COMPANY
+                                            </td>
+                                            <td>
+                                                @*配達品名数量*@
+                                                @Model.viewModel.tableRows[index].data.info.DELIVERY_TITLE
+                                            </td>
+                                            <td>
+                                                @*配達備考*@
+                                                @Model.viewModel.tableRows[index].data.info.DELIVERY_NOTE
+                                            </td>
+                                            <td>
+                                                @*配達A/C先*@
+                                                @Model.viewModel.tableRows[index].data.info.DELIVERY_AC
+                                            </td>
+                                            <td>
+                                                @*集荷品名数量*@
+                                                @Model.viewModel.tableRows[index].data.info.CARGO_TITLE
+                                            </td>
+                                            <td>
+                                                @*集荷備考*@
+                                                @Model.viewModel.tableRows[index].data.info.CARGO_NOTE
+                                            </td>
+                                            <td>
+                                                @*集荷A/C先*@
+                                                @Model.viewModel.tableRows[index].data.info.CARGO_AC
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+
+
+                        @*レコード追跡用のデータ*@
+                        @if (null != Model.viewModel.tableRows)
+                        {
+                            @foreach (var (item, index) in Model.viewModel.tableRows.Select((item, index)
+                             => (item, index)))
+                            {
+                                @*レコード追跡用のデータ*@
+                                <input type="hidden" asp-for="@Model.viewModel.tableRows[index].data.info.ID"
+                                       value="@Model.viewModel.tableRows[index].data.info.ID" />
+                                <input type="hidden" asp-for="@Model.viewModel.tableRows[index].data.info.DELIVERY_REQUEST_DETAIL_NUMBER"
+                                       value="@Model.viewModel.tableRows[index].data.info.DELIVERY_REQUEST_DETAIL_NUMBER" />
+                                <input type="hidden" asp-for="@Model.viewModel.tableRows[index].data.info.TRUCK_MANAGE_NUMBER"
+                                       value="@Model.viewModel.tableRows[index].data.info.TRUCK_MANAGE_NUMBER" />
+                                <input type="hidden" asp-for="@Model.viewModel.tableRows[index].data.info.TRANSPORT_ADMIN_CODE"
+                                       value="@Model.viewModel.tableRows[index].data.info.TRANSPORT_ADMIN_CODE" />
+                                <input type="hidden" asp-for="@Model.viewModel.tableRows[index].data.info.DELIVERY_REQUEST_NUMBER"
+                                       value="@Model.viewModel.tableRows[index].data.info.DELIVERY_REQUEST_NUMBER" />
+                                <input type="hidden" asp-for="@Model.viewModel.tableRows[index].data.info.collisionDetection_Timestamp"
+                                       value="@Model.viewModel.tableRows[index].data.info.collisionDetection_Timestamp" />
+                            }
+                        }
+
+                    </div>
+                </article>
+        </section>
+
+        <!--　[開始] 車番号選択画面 -->
+        <partial name="PopUp/_PopDeliveryCarNumberSetting" for="@Model.deliveryCarNumberSetting" />
+
+    </form>
+</article>

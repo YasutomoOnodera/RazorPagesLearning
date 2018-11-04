@@ -1,0 +1,414 @@
+﻿@*@model RazorPagesLearning.Pages.PopUp.SelectDeriveryModel.ViewModel*@
+
+<!-- 在庫詳細照会（ステータス）モーダル画面 -->
+<input type="hidden" name="popStockDetailId" />
+<section class="modal-window" id="modal-detail">
+    <div class="modal-inner p-modal">
+        <article class="p-modal__title">
+            <h1 class="o-plate__title">詳細</h1>
+            <div class="p-modal__grobal__nav">
+                <button type="button" class="o-button__base">印刷</button>
+                <button type="button" class="o-button__dl">EXCEL</button>
+                <button type="button" class="o-button__dl">CSV</button>
+                <button type="button" class="o-button__done" name="popupStockDetailUpdate">更新</button>
+                <button type="button">
+                    <a href="#!" type="button " class="o-button__close"></a>
+                </button>
+            </div>
+        </article>
+        <article class="p-modal__contents">
+            <div>
+                <div style="padding: 0 40px 0px 38px;">
+                    <section class="d-flex">
+                        <article class="u-wrap-mb" style="width:48%;">
+                            <div class="p-datachip__blank">
+                                <h1>倉庫管理番号</h1>
+                                <p class="off" name="popStockDetail-StorageManageNumber">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>お客様管理番号</h1>
+                                <p class="off" name="popStockDetail-CustomerManageNumber">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>題名</h1>
+                                <p class="off" name="popStockDetail-Title">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>副題</h1>
+                                <p class="off" name="popStockDetail-Subtitle">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>Remark1</h1>
+                                <p class="off" name="popStockDetail-Remark1">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>Remark2</h1>
+                                <p class="off" name="popStockDetail-Remark2">
+                                </p>
+                            </div>
+                        </article>
+                        <article class="u-wrap-mb ml-5" style="width:48%;">
+                            <div class="p-datachip__blank">
+                                <h1 style="width:4rem;">区分1</h1>
+                                <p class="off" name="popStockDetail-Class1">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1 style="width:4rem;">区分2</h1>
+                                <p class="off" name="popStockDetail-Class2">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1 style="width:4rem;">更新日</h1>
+                                <p class="off" name="popStockDetail-UpdateDate">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1 style="width:4rem;">登録日</h1>
+                                <p class="off" name="popStockDetail-RegistDate">
+                                </p>
+                            </div>
+                        </article>
+                    </section>
+                    <div class="o-border__bold__sm"></div>
+                    <section class="u-wrap-mb">
+                        <div class="p-datachip__blank">
+                            <h1>備考</h1>
+                            <p class="off" name="popStockDetail-Note">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>荷主項目</h1>
+                            <p style="border:none;padding:0;">
+                                <textarea name="popStockDetail-ShipperNote" id="" rows="3" style="margin: 0;"></textarea>
+                            </p>
+                        </div>
+                    </section>
+                    <div class="o-border__bold__sm"></div>
+                    <section class="d-flex">
+                        <article class="u-wrap-mb" style="width:48%;">
+                            <section class="u-wrap-mb">
+                                <div class="p-datachip__blank">
+                                    <h1>形状</h1>
+                                    <p class="off" name="popStockDetail-Shape">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1>時間</h1>
+                                    <p class="off" name="popStockDetail-Time">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1>制作日</h1>
+                                    <p class="off" name="popStockDetail-ProductDate">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1>廃棄予定日</h1>
+                                    <p class="off" name="popStockDetail-ScrapScheduleDate">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1>入庫日</h1>
+                                    <p class="off" name="popStockDetail-StorageDate">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1>在庫数</h1>
+                                    <p class="off" name="popStockDetail-StockCount">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1>伝票番号</h1>
+                                    <p class="off" name="popStockDetail-SlipNumber">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1>受付番号</h1>
+                                    <p class="off" name="popStockDetail-OrderNumder">
+                                    </p>
+                                </div>
+                            </section>
+                        </article>
+                        <article class="u-wrap-mb ml-5" style="width:48%;">
+                            <section class="u-wrap-mb">
+                                <div class="p-datachip__blank">
+                                    <h1 style="width:6rem;">ステータス</h1>
+                                    <p class="off" name="popStockDetail-Status">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1 style="width:6rem;">出荷先/返却元コード</h1>
+                                    <p class="off" name="popStockDetail-ShipReturnCode">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1 style="width:6rem;">出荷先/返却元名称</h1>
+                                    <p class="off" name="popStockDetail-ShipReturnCompany">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1 style="width:6rem;">処理日</h1>
+                                    <p class="off" name="popStockDetail-ProcessingDate">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1 style="width:6rem;">入出庫日</h1>
+                                    <p class="off" name="popStockDetail-StorageRetrievalDate">
+                                    </p>
+                                </div>
+                                <div class="p-datachip__blank">
+                                    <h1 style="width:6rem;">着時間</h1>
+                                    <p class="off" name="popStockDetail-ArrivalTime">
+                                    </p>
+                                </div>
+                            </section>
+                        </article>
+                    </section>
+                    <div class="o-border__bold__sm"></div>
+                    <section class="u-wrap-mb">
+                        <div class="p-datachip__blank">
+                            <h1>お客様項目１</h1>
+                            <p style="flex-grow:0;width: 9rem;">
+                                <input type="text" name="popStockDetail-CustomerItem1Code">
+                            </p>
+                            <p>
+                                <input type="text" name="popStockDetail-CustomerItem1Value">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>お客様項目２</h1>
+                            <p style="flex-grow:0;width: 9rem;">
+                                <input type="text" name="popStockDetail-CustomerItem2Code">
+                            </p>
+                            <p>
+                                <input type="text" name="popStockDetail-CustomerItem2Value">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>お客様項目３</h1>
+                            <p style="flex-grow:0;width: 9rem;">
+                                <input type="text" name="popStockDetail-CustomerItem3Code">
+                            </p>
+                            <p>
+                                <input type="text" name="popStockDetail-CustomerItem3Value">
+                            </p>
+                        </div>
+                        @if (Model.viewModel.popStockDetailCutsomerOnlyFlag == true)
+                        {
+                            <div class="p-datachip__blank">
+                                <h1>ProjectNo</h1>
+                                <p style="flex-grow:0;width: 9rem;">
+                                    <input type="text" name="popStockDetail-ProjectNo1">
+                                </p>
+                                <p>
+                                    <input type="text" name="popStockDetail-ProjectNo2">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>著作権</h1>
+                                <p style="flex-grow:0;width: 9rem;">
+                                    <select name="popStockDetail-Copyright1" asp-items="@Model.viewModel.popStockDetailSelectCopyRightList">
+                                        <option value=""></option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <input type="text" name="popStockDetail-Copyright2">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>契約書</h1>
+                                <p style="flex-grow:0;width: 9rem;">
+                                    <select name="popStockDetail-Contract1" asp-items="@Model.viewModel.popStockDetailSelectContractList">
+                                        <option value=""></option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <input type="text" name="popStockDetail-Contract2">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>データNo</h1>
+                                <p style="flex-grow:0;width: 9rem;">
+                                    <input type="text" name="popStockDetail-DataNo1">
+                                </p>
+                                <p>
+                                    <input type="text" name="popStockDetail-DataNo2">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>処理判定</h1>
+                                <p style="flex-grow:0;width: 9rem;">
+                                    <select name="popStockDetail-ProcessJudge1" asp-items="@Model.viewModel.popStockDetailSelectProcessJudgeList">
+                                        <option value=""></option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <input type="text" name="popStockDetail-ProcessJudge2">
+                                </p>
+                            </div>
+                        }
+                    </section>
+                </div>
+            </div>
+        </article>
+    </div>
+    <a href="#! " class="modal-close">×</a>
+</section>
+<script type="text/javascript">
+    var _stockId;
+    $(function () {
+        $(window).on('hashchange', function () {
+            if (location.hash == '#modal-detail') {
+                _stockId = $("[name='popStockDetailId']").val();
+                searchStockDetail(_stockId);
+            }
+        });
+    });
+
+    function searchStockDetail(stockId) {
+
+        //nullだったら空を指定する
+        var LF_setEmptyIfNull = function (src) {
+            if (null == src) {
+                return "";
+            }
+            else {
+                return src;
+            }
+        }
+
+        $.ajax({
+            url: "/Json?Handler=StockDetail&stockId=" + stockId,
+            type: 'GET',
+            success: function (data) {
+                $("[name='popStockDetail-StorageManageNumber']").text(data.stock.STORAGE_MANAGE_NUMBER);
+                $("[name='popStockDetail-CustomerManageNumber']").text(data.stock.CUSTOMER_MANAGE_NUMBER);
+                $("[name='popStockDetail-Title']").text(data.stock.TITLE);
+                $("[name='popStockDetail-Subtitle']").text(data.stock.SUBTITLE);
+                $("[name='popStockDetail-Remark1']").text(data.stock.REMARK1);
+                $("[name='popStockDetail-Remark2']").text(data.stock.REMARK2);
+                $("[name='popStockDetail-Class1']").text(data.stock.CLASS1);
+                $("[name='popStockDetail-Class2']").text(data.stock.CLASS2);
+                $("[name='popStockDetail-UpdateDate']").text(data.stock.WMS_UPDATE_DATE);
+                $("[name='popStockDetail-RegistDate']").text(data.stock.WMS_REGIST_DATE);
+                $("[name='popStockDetail-Note']").text(data.stock.NOTE);
+                $("[name='popStockDetail-ShipperNote']").text(data.stock.SHIPPER_NOTE);
+                $("[name='popStockDetail-Shape']").text(data.stock.SHAPE);
+                $("[name='popStockDetail-Time']").text((data.stock.TIME1 ? data.stock.TIME1 : '') + ' ' + (data.stock.TIME2 ? data.stock.TIME2 : ''));
+                $("[name='popStockDetail-ProductDate']").text(data.stock.PRODUCT_DATE);
+                $("[name='popStockDetail-ScrapScheduleDate']").text(data.stock.SCRAP_SCHEDULE_DATE);
+                $("[name='popStockDetail-StorageDate']").text(data.stock.STORAGE_DATE);
+                $("[name='popStockDetail-StockCount']").text(data.stock.STOCK_COUNT);
+                $("[name='popStockDetail-SlipNumber']").text(data.stock.SLIP_NUMBER);
+                $("[name='popStockDetail-OrderNumder']").text(data.stock.ORDER_NUMBER);
+                $("[name='popStockDetail-Status']").text(data.stock.STATUS);
+                $("[name='popStockDetail-ShipReturnCode']").text(data.stock.SHIP_RETURN_CODE);
+                $("[name='popStockDetail-ShipReturnCompany']").text(data.stock.SHIP_RETURN_COMPANY);
+                $("[name='popStockDetail-ProcessingDate']").text(data.stock.PROCESSING_DATE);
+                $("[name='popStockDetail-StorageRetrievalDate']").text(data.stock.STORAGE_RETRIEVAL_DATE);
+                $("[name='popStockDetail-ArrivalTime']").text(data.stock.ARRIVAL_TIME);
+
+                //お客様項目は別テーブルから参照する
+                if (null == data.user_item) {
+                    //nullで来た場合、以下処理が進まないので、
+                    //代わりにダミーオブジェクトを張り付ける。
+                    data.user_item = {};
+                }
+                $("[name='popStockDetail-CustomerItem1Code']").val(LF_setEmptyIfNull(data.user_item.ITEM1_CODE));
+                $("[name='popStockDetail-CustomerItem1Value']").val(LF_setEmptyIfNull(data.user_item.ITEM1_VALUE));
+                $("[name='popStockDetail-CustomerItem2Code']").val(LF_setEmptyIfNull(data.user_item.ITEM2_CODE));
+                $("[name='popStockDetail-CustomerItem2Value']").val(LF_setEmptyIfNull(data.user_item.ITEM2_VALUE));
+                $("[name='popStockDetail-CustomerItem3Code']").val(LF_setEmptyIfNull(data.user_item.ITEM3_CODE));
+                $("[name='popStockDetail-CustomerItem3Value']").val(LF_setEmptyIfNull(data.user_item.ITEM3_VALUE));
+
+                $("[name='popStockDetail-ProjectNo1']").val(data.stock.PROJECT_NO1);
+                $("[name='popStockDetail-ProjectNo2']").val(data.stock.PROJECT_NO2);
+                $("[name='popStockDetail-Copyright1']").val(data.stock.COPYRIGHT1);
+                $("[name='popStockDetail-Copyright2']").val(data.stock.COPYRIGHT2);
+                $("[name='popStockDetail-Contract1']").val(data.stock.CONTRACT1);
+                $("[name='popStockDetail-Contract2']").val(data.stock.CONTRACT2);
+                $("[name='popStockDetail-DataNo1']").val(data.stock.DATA_NO1);
+                $("[name='popStockDetail-DataNo2']").val(data.stock.DATA_NO2);
+                $("[name='popStockDetail-ProcessJudge1']").val(data.stock.PROCESS_JUDGE1);
+                $("[name='popStockDetail-ProcessJudge2']").val(data.stock.PROCESS_JUDGE2);
+            },
+            error: function (data) {
+            }
+        });
+    }
+
+    $('[name="popupStockDetailUpdate"').click(function () {
+        var _customerItem1Code = $("[name='popStockDetail-CustomerItem1Code']").val();
+        var _customerItem1Value = $("[name='popStockDetail-CustomerItem1Value']").val();
+        var _customerItem2Code = $("[name='popStockDetail-CustomerItem2Code']").val();
+        var _customerItem2Value = $("[name='popStockDetail-CustomerItem2Value']").val();
+        var _customerItem3Code = $("[name='popStockDetail-CustomerItem3Code']").val();
+        var _customerItem3Value = $("[name='popStockDetail-CustomerItem3Value']").val();
+
+        var _projectNo1 = $("[name='popStockDetail-ProjectNo1']").val();
+        var _projectNo2 = $("[name='popStockDetail-ProjectNo2']").val();
+
+        var _copyright1 = $("[name='popStockDetail-Copyright1']").val();
+        var _copyright2 = $("[name='popStockDetail-Copyright2']").val();
+
+        var _contract1 = $("[name='popStockDetail-Contract1']").val();
+        var _contract2 = $("[name='popStockDetail-Contract2']").val();
+
+        var _dataNo1 = $("[name='popStockDetail-DataNo1']").val();
+        var _dataNo2 = $("[name='popStockDetail-DataNo2']").val();
+
+        var _processJudge1 = $("[name='popStockDetail-ProcessJudge1']").val();
+        var _processJudge2 = $("[name='popStockDetail-ProcessJudge2']").val();
+
+        $.confirm({
+            title: '集在庫詳細更新',
+            content: '集在庫詳細情報を更新しますか？',
+            buttons: {
+                ok: {
+                    text: "はい",
+                    action: function () {
+                        // TODO POSTアクションでうまく通信できないので、GET通信で対応する
+                        $.ajax({
+                            url: "/Json?Handler=StockDetailUpdate",
+                            data: {
+                                stockId: _stockId,
+                                customerItem1Code: _customerItem1Code,
+                                customerItem1Value: _customerItem1Value,
+                                customerItem2Code: _customerItem2Code,
+                                customerItem2Value: _customerItem2Value,
+                                customerItem3Code: _customerItem3Code,
+                                customerItem3Value: _customerItem3Value,
+                                projectNo1: _projectNo1,
+                                projectNo2: _projectNo2,
+                                copyright1: _copyright1,
+                                copyright2: _copyright2,
+                                contract1: _contract1,
+                                contract2: _contract2,
+                                dataNo1: _dataNo1,
+                                dataNo2: _dataNo2,
+                                processJudge1: _processJudge1,
+                                processJudge2: _processJudge2
+                            },
+                            type: 'GET',
+                            success: function (data) {
+                            },
+                            error: function (data) {
+                            }
+                        });
+                    }
+                },
+                cancel: {
+                    text: "いいえ",
+                    action: function () {
+                    }
+                }
+            }
+        });
+    });
+</script>

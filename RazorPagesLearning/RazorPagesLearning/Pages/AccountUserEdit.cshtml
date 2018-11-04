@@ -1,0 +1,543 @@
+﻿@page  "{userid?}"
+@model RazorPagesLearning.Pages.AccountUserEditModel
+@{
+    ViewData["Title"] = "AccountUserEdit";
+}
+
+
+<!-- 郵便番号読み取りライブラリをロード -->
+<script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+
+<!-- バリデーションライブラリをロード -->
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+
+<!-- モーダル表示ライブラリをロード -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+<script type="text/javascript">
+
+    //パスワード変更チェックボックスがチェックされたら内容を文字入力領域を有効にするように設定する
+    var onCheckbox_ChangePassword = function () {
+
+        //チェックボックスの選択状態を取得
+        var cBox = $('#Checkbox_ChangePassword');
+        var tChecked = cBox.prop('checked');
+        if (true == tChecked) {
+            //チェックされていたらテキストボックスを有効化
+            $('[id^=Textbox_ChangePassword]')
+                .each(function (i, elem) {
+                    $(elem).removeClass('off');
+                });
+        }
+        else {
+            //チェックされていたらテキストボックスを無効化
+            $('[id^=Textbox_ChangePassword]')
+                .each(function (i, elem) {
+                    $(elem).addClass('off');
+                });
+        }
+    };
+
+    //! 部課コードの一括チェック選択ボックスを選択された時のイベント
+    var onDepartmentSelectionCheckbox = function () {
+
+        //チェックボックスの状態を取得する
+        var cBox = $('#department-selection-all-checkbox');
+        var tChecked = cBox.prop('checked');
+
+        //変更対象となる要素
+        var targetElement = $('#department-selection :checkbox')
+            .not("#department-selection-all-checkbox");
+
+
+        if (true == tChecked) {
+            //チェックされていたらテキストボックスを有効化
+            targetElement
+                .each(function (i, ele) {
+                    $(ele).prop('checked', true);
+                    $(ele).val(true);
+                });
+        }
+        else {
+            //チェックされていたらテキストボックスを無効化
+            targetElement
+                .each(function (i, ele) {
+                    $(ele).prop('checked', false);
+                    $(ele).val(false);
+                });
+        }
+    };
+
+    //登録処理実行実行ボタン押下
+    var onConfirmRegistrationButton = function () {
+
+        var isTargetValid = $('#AccountUserEditForm').valid();
+        if (true == isTargetValid) {
+
+            var postFunc = function () {
+                var tForm = $('form');
+                tForm.attr('action', '?handler=Save');
+                tForm.submit();
+            };
+
+            if (true == VegaUtility.StaticFunctions.ConfirmationDialog.isNeedShow()) {
+
+                $.confirm({
+                    title: '登録確認',
+                    content: 'ユーザーアカウント情報を登録してもよろしいでしょうか?',
+                    buttons: {
+                        'OK': function () {
+                            //該当フォームに対して登録命令を出す
+                            postFunc();
+                        },
+                        'キャンセル': function () {
+                        }
+                    }
+                });
+            }
+            else {
+                //確認ダイアログを表示する必要なし
+
+                //該当フォームに対して登録命令を出す
+                postFunc();
+            }
+        }
+        else {
+
+            $.alert({
+                title: '確認',
+                content: '入力間違えを修正してください。',
+            });
+
+        }
+    };
+
+
+    (function () {
+
+        //ページロード時
+        $(document).ready(function () {
+
+            //要求された状態に合わせてパスワード変更チェックボックスの状態を変更する
+            //(postされてきた状態に合わせる)
+            onCheckbox_ChangePassword();
+
+            //ページを開いたら、ローディング表示を非表示に
+            VegaUtility.StaticFunctions.LoadingSplash.hide();
+
+        });
+
+    })();
+
+</script>
+
+
+<!-- 本文 -->
+<article id="Account-user__edit" class="p-main-wrap">
+    <section>
+        <form method="POST" id="AccountUserEditForm">
+            <article class="p-scroll__head">
+                <h1 class="title">ユーザーアカウント編集</h1>
+
+                <article>
+                    <div class="p-buttom-wrap">
+
+                        <button type="button" class="o-button__done" onclick="onConfirmRegistrationButton()">
+                            登録
+                        </button>
+
+                        <a asp-page="./AccountUser" class="o-button__base">戻る</a>
+                    </div>
+
+                    <!-- エラーメッセージ表示 -->
+                    @if (null != Model.viewModel.errorMessage)
+                    {
+                        <div class="alert alert-danger" role="alert">
+
+                            @foreach (var ele in Model.viewModel.errorMessage)
+                            {
+                                <p>
+                                    @ele
+                                </p>
+                            }
+
+                        </div>
+                    }
+
+                    <div class="o-border__bold"></div>
+                </article>
+            </article>
+
+            <article class="p-scroll__body">
+                <article style="padding: 20px 40px 0px 38px;" class="d-flex justify-content-between">
+
+                    <section class="u-wrap-mb" style="width:48%;">
+
+                        @* DB上存在するデータかよくわからないのでIDを残しておく *@
+                        <input type="hidden" asp-for="@Model.viewModel.USER_ACCOUNT.ID">
+                        @* データ同期検知用の文字列 *@
+                        <input type="hidden" asp-for="@Model.viewModel.collisionDetectionTimestamp">
+
+                        @* 新規登録された情報か残しておく *@
+                        <input type="hidden" asp-for="@Model.viewModel.isNewData">
+
+                        <div class="p-datachip__blank">
+                            <h1>権限</h1>
+                            <p>
+                                <select asp-for=@Model.viewModel.accountPermissions.selected asp-items="@Model.viewModel.accountPermissions.display"
+                                        onchange="submit(this.form)"></select>
+                            </p>
+                        </div>
+
+                        <!-- 荷主だったら表示する -->
+                        @if ((Model.viewModel.accountPermissions.selected == RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperBrowsing.ToString()) ||
+(Model.viewModel.accountPermissions.selected == RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperEditing.ToString()))
+                        {
+                            <div class="p-datachip__blank">
+                                <h1>荷主コード</h1>
+                                <p>
+                                    <!-- 荷主コードが変更になったら値のロードをかける -->
+                                    <input asp-for="@Model.viewModel.SHIPPER_CODE"
+                                           onblur="submit(this.form)" maxlength="3">
+                                </p>
+                            </div>
+                            <div class="p-datachip__blank">
+                                <h1>荷主名</h1>
+                                <p class="off">
+                                    @Html.DisplayFor(model => Model.viewModel.SHIPPER_NAME)
+                                </p>
+                            </div>
+                        }
+
+                        <div class="o-border__bold__sml"></div>
+                        <div class="p-datachip__blank">
+                            <h1>ユーザーID</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.USER_ID">
+                            </p>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.USER_ID" class="text-danger"></span>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>ユーザー名</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.NAME">
+                            </p>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.NAME" class="text-danger"></span>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>ユーザー名(カナ)</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.KANA">
+                            </p>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.KANA" class="text-danger"></span>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>社名</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.COMPANY">
+                            </p>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.COMPANY" class="text-danger"></span>
+                        </div>
+
+                        <div class="p-datachip__blank">
+                            <h1>部署名</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.DEPARTMENT">
+                            </p>
+                        </div>
+
+                        <div class="p-datachip__blank">
+                            <h1>郵便番号</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.ZIPCODE">
+                            </p>
+                            <button type="button" class="o-button__base"
+                                    onclick="AjaxZip3.zip2addr('viewModel.USER_ACCOUNT.ZIPCODE','','viewModel.USER_ACCOUNT.ADDRESS1','viewModel.USER_ACCOUNT.ADDRESS2');">
+                                住所を表示
+                            </button>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.ZIPCODE" class="text-danger"></span>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>住所１</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.ADDRESS1">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>住所2</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.ADDRESS2">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>TEL</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.TEL">
+                            </p>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.TEL" class="text-danger"></span>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>FAX</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.FAX">
+                            </p>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.FAX" class="text-danger"></span>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>メールアドレス</h1>
+                            <p>
+                                <input asp-for="@Model.viewModel.USER_ACCOUNT.MAIL">
+                            </p>
+                            <span asp-validation-for="@Model.viewModel.USER_ACCOUNT.MAIL" class="text-danger"></span>
+                        </div>
+                        <div class="o-border__bold__sml"></div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:300px;">
+                                <div class="mr-2" style="width:15px;">
+                                    <input id="Checkbox_ChangePassword"
+                                           asp-for="@Model.viewModel.passwordInfo.update"
+                                           onclick="onCheckbox_ChangePassword()">
+                                </div>
+                                パスワード設定
+                            </h1>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:10rem;">管理者パスワード</h1>
+                            <p>
+                                <input class="off" id="Textbox_ChangePassword1" type="password" asp-for="@Model.viewModel.passwordInfo.administratorPassword" value="hogehoge">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:10rem;">新しいパスワード</h1>
+                            <p>
+                                <input class="off" id="Textbox_ChangePassword2" type="password" asp-for="@Model.viewModel.passwordInfo.password">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:10rem;">
+                                新しいパスワード(確認)
+                            </h1>
+                            <p>
+                                <input class="off" id="Textbox_ChangePassword3" type="password" asp-for="@Model.viewModel.passwordInfo.passwordConfirmation">
+                            </p>
+                        </div>
+                        <div class="o-border__bold__sml"></div>
+                    </section>
+                    <section style="width:48%;" class="u-wrap-mb">
+                        <div class="p-datachip__blank">
+                            <h1>ログイン</h1>
+                            <p>
+                                <select asp-for=@Model.viewModel.LOGIN_ENABLE.selected asp-items="@Model.viewModel.LOGIN_ENABLE.display"></select>
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>パスワードを無期限に設定する</h1>
+                            <p>
+                                <select asp-for=@Model.viewModel.EXPIRE_FLAG.selected asp-items="@Model.viewModel.EXPIRE_FLAG.display"></select>
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 class="u-w-auto">
+                                次回ログイン時にパスワードを変更する
+                                <input type="checkbox" class="ml-2" asp-for="@Model.viewModel.USER_ACCOUNT.PASSWORD_CHANGE_REQUEST">
+                            </h1>
+                        </div>
+                        <div class="o-border__bold__sml"></div>
+
+                        <!-- 運送会社だったら表示する -->
+                        @if ((Model.viewModel.accountPermissions.selected == RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShippingCompany.ToString()))
+                        {
+                            <div class="p-datachip__blank">
+                                <h1>運送会社</h1>
+                                <p>
+                                    <select asp-for=@Model.viewModel.TRANSPORT_ADMIN.selected asp-items="@Model.viewModel.TRANSPORT_ADMIN.display"
+                                            onchange="submit(this.form)"></select>
+                                </p>
+                            </div>
+                        }
+                        <div class="p-datachip__blank">
+                            <h1 class="u-w-auto">
+                                確認ダイアログを表示しない
+                                <input type="checkbox" class="ml-2" asp-for="@Model.viewModel.USER_ACCOUNT.CONFIRM_FLAG">
+                            </h1>
+                        </div>
+
+                        <!-- 荷主だったら表示する -->
+                        @if ((Model.viewModel.accountPermissions.selected == RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperBrowsing.ToString()) ||
+(Model.viewModel.accountPermissions.selected == RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperEditing.ToString()))
+                        {
+
+                            <div class="p-table" style="padding: 0;;height: auto;">
+                                <table class="table-bordered" id="department-selection">
+                                    <thead>
+                                    <th style="width:1.3rem;">
+                                        <input type="checkbox"
+                                               id="department-selection-all-checkbox"
+                                               onclick="onDepartmentSelectionCheckbox()">
+                                    </th>
+                                    <th>▼部課コード</th>
+                                    <th>▼部課名</th>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var x in Model.viewModel.Belongs_DEPARTMENTs
+                                           .Select((item, index) => new { item, index }))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox"
+                                                           asp-for="@Model.viewModel.Belongs_DEPARTMENTs[x.index].selected">
+                                                </td>
+                                                <td>
+                                                    @x.item.DEPARTMENT_ADMIN.DEPARTMENT_CODE
+                                                    @* データ追跡用*@
+                                                    <input type="hidden" asp-for="@Model.viewModel.Belongs_DEPARTMENTs[x.index].DEPARTMENT_CODE">
+                                                    <input type="hidden" asp-for="@Model.viewModel.Belongs_DEPARTMENTs[x.index].SHIPPER_CODE">
+
+                                                </td>
+                                                <td>
+                                                    @x.item.DEPARTMENT_ADMIN.DEPARTMENT_NAME
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="p-datachip__blank">
+                                <h1>デフォルト部課コード</h1>
+                                <p>
+                                    <select asp-for=@Model.viewModel.DEFAULT_DEPARTMENT_ADMIN.selected asp-items="@Model.viewModel.DEFAULT_DEPARTMENT_ADMIN.display"></select>
+                                </p>
+                            </div>
+                        }
+
+                        <!-- 新規データの時は値を表示しない  -->
+                        <div class="o-border__bold__sml"></div>
+                        <div class="p-datachip__blank">
+                            <h1>最終ログイン日時</h1>
+                            <p class="off">
+                                @if (false == Model.viewModel.isNewData)
+                                {
+                                    @RazorPagesLearning.Service.Utility.ViewHelper.HelperFunctions.toFormattedString(Model.viewModel.USER_ACCOUNT.LOGINED_AT)
+                                }
+                                else
+                                {
+                                    @:  -
+                                }
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>最終パスワード変更日時</h1>
+                            <p class="off">
+                                @if (false == Model.viewModel.isNewData)
+                                {
+                                    @RazorPagesLearning.Service.Utility.ViewHelper.HelperFunctions.toFormattedString(Model.viewModel.USER_ACCOUNT.PASSWORD_UPDATED_AT)
+                                }
+                                else
+                                {
+                                    @:  -
+                                }
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>アカウント状態</h1>
+                            <p class="off">
+                                @if (false == Model.viewModel.isNewData)
+                                {
+                                    //有効期限を取得する
+                                    //前提条件として登録済みであると判断する
+                                    var interval = @Model.policyService.read(new Service.DB.PolicyService.ReadConfig
+                                    {
+                                        NAME = RazorPagesLearning.Data.Models.POLICY.PASSWORD_POLICY.Interval
+                                    }).result.VALUE;
+
+                                    var r = Model.userService.isPasswordExpiration(interval, Model.viewModel.USER_ACCOUNT);
+                                    if (false == r)
+                                    {
+                                        @: ログイン可能
+                                    }
+                                    else
+                                    {
+                                        @: パスワードの有効期間切れ
+                                    }
+                                }
+                                else
+                                {
+                                    @:  -
+                                }
+                            </p>
+                        </div>
+                        <div class="o-border__bold__sml"></div>
+                        <div class="p-datachip__blank">
+                            <h1>初回登録日時</h1>
+                            <p class="off">
+                                @if (false == Model.viewModel.isNewData)
+                                {
+                                    @RazorPagesLearning.Service.Utility.ViewHelper.HelperFunctions.toFormattedString(Model.viewModel.USER_ACCOUNT.CREATED_AT)
+                                }
+                                else
+                                {
+                                    @:  -
+                                }
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>最終更新日時</h1>
+                            <p class="off">
+                                @if (false == Model.viewModel.isNewData)
+                                {
+                                    @RazorPagesLearning.Service.Utility.ViewHelper.HelperFunctions.toFormattedString(Model.viewModel.USER_ACCOUNT.UPDATED_AT)
+
+                                }
+                                else
+                                {
+                                    @:  -
+                                }
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>最終更新者</h1>
+                            <p class="off">
+                                @if (false == Model.viewModel.isNewData)
+                                {
+                                    //初回更新日と最終更新日で比較して新しい側のユーザー名を表示する
+                                    var uID = (new Func<Int64>(() =>
+                                    {
+                                        var u = Model.viewModel.USER_ACCOUNT;
+                                        if (u.CREATED_AT < u.UPDATED_AT)
+                                        {
+                                            return u.UPDATED_USER_ACCOUNT_ID;
+                                        }
+                                        else
+                                        {
+                                            return u.CREATED_USER_ACCOUNT_ID;
+                                        }
+                                    }))();
+
+                                    var ui = @Model.userService.read(uID);
+                                    if (null != ui)
+                                    {
+                                        @ui.NAME
+                                    }
+                                    else
+                                    {
+                                        WriteLiteral("-");
+                                    }
+                                }
+                                else
+                                {
+                                    @:  -
+                                }
+                            </p>
+                        </div>
+                        <div class="o-border__bold__sml"></div>
+                    </section>
+                </article>
+            </article>
+        </form>
+    </section>
+</article>
+

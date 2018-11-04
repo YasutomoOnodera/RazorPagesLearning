@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 51">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #294e95;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <g id="bt-left" transform="translate(-308 -35)">
+    <circle id="楕円形_1" data-name="楕円形 1" class="cls-1" cx="25.5" cy="25.5" r="25.5" transform="translate(308 35)"/>
+    <path id="パス_695" data-name="パス 695" class="cls-2" d="M335.733,49.936V74.788L320.278,62.1Z" transform="translate(-3.315 -0.786)"/>
+    <rect id="長方形_150" data-name="長方形 150" class="cls-2" width="18.823" height="9.136" transform="translate(330.246 57)"/>
+  </g>
+</svg>

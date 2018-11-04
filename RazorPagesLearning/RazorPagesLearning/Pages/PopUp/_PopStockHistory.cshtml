@@ -1,0 +1,184 @@
+﻿@*@model RazorPagesLearning.Pages.PopUp.SelectDeriveryModel.ViewModel*@
+
+<!-- 履歴詳細照会（入出庫履歴）モーダル画面 -->
+<input type="hidden" name="popStockHistoryId" />
+<section class="modal-window" id="modal-history">
+    <div class="modal-inner p-modal">
+        <article class="p-modal__title">
+            <h1 class="o-plate__title">履歴</h1>
+            <div class="p-modal__grobal__nav">
+                <button type="button" class="o-button__base">印刷</button>
+                <button type="button" class="o-button__dl">EXCEL</button>
+                <button type="button" class="o-button__dl">CSV</button>
+                <button type="button">
+                    <a href="#!" type="button " class="o-button__close"></a>
+                </button>
+            </div>
+        </article>
+        <article class="p-modal__contents">
+            <article class="pr-3">
+                <section class="d-flex">
+                    <article class="u-wrap-mb" style="width:48%;">
+                        <div class="p-datachip__blank">
+                            <h1>倉庫管理番号</h1>
+                            <p class="off" name="storageManageNumber">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>お客様管理番号</h1>
+                            <p class="off" name="customerManageNumber">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>題名</h1>
+                            <p class="off" name="title">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>副題</h1>
+                            <p class="off" name="subtitle">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>Remark1</h1>
+                            <p class="off" name="remark1">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1>Remark2</h1>
+                            <p class="off" name="remark2">
+                            </p>
+                        </div>
+                    </article>
+                    <article class="u-wrap-mb ml-5" style="width:48%;">
+                        <div class="p-datachip__blank">
+                            <h1 style="width:5rem;">形状</h1>
+                            <p class="off" name="shape">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:5rem;">時間</h1>
+                            <p class="off" name="time">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:5rem;">廃棄予定日</h1>
+                            <p class="off" name="scrapScheduleDate">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:5rem;">入庫日</h1>
+                            <p class="off" name="storageDate">
+                            </p>
+                        </div>
+                        <div class="p-datachip__blank">
+                            <h1 style="width:5rem;">制作日</h1>
+                            <p class="off" name="productDate">
+                            </p>
+                        </div>
+                    </article>
+                </section>
+                <div class="o-border__bold__sm"></div>
+            </article>
+            <article class="p-scroll__body">
+                <div class="p-table">
+                    <table class="table-bordered table-hover" name="stockHistoryTable">
+                        <thead>
+                            <tr>
+                                <th name="searchOrder" data-order="0">▲処理日</th>
+                                <th name="searchOrder" data-order="1">●伝票番号</th>
+                                <th name="searchOrder" data-order="2">●受付番号</th>
+                                <th name="searchOrder" data-order="3">●ステータス</th>
+                                <th name="searchOrder" data-order="4">●入出庫日</th>
+                                <th name="searchOrder" data-order="5">●着時間</th>
+                                <th name="searchOrder" data-order="6">●出荷先/返却元</th>
+                                <th name="searchOrder" data-order="7">●依頼数</th>
+                                <th name="searchOrder" data-order="8">●確定数</th>
+                            </tr>
+                        </thead>
+                        <tbody class="stockHistoryList"></tbody>
+                    </table>
+                </div>
+            </article>
+        </article>
+    </div>
+    <a href="#! " class="modal-close">×</a>
+</section>
+<script type="text/javascript">
+    //  TODO あとでStockIdに置き換える
+    var _stockId = 0;
+    var _orderKey = 0;
+    var _order = 0;
+
+    $(function () {
+        $(window).on('hashchange', function () {
+            if (location.hash == '#modal-history') {
+                _stockId = $("[name='popStockHistoryId']").val();
+                searchStockHistory();
+            }
+        });
+    });
+
+    function searchStockHistory() {
+        $.ajax({
+            url: "/Json?Handler=StockHistory&stockId=" + _stockId + "&orderKey=" + _orderKey + "&order" + _order,
+            type: 'GET',
+            success: function (data) {
+                //debugger;
+                $('[name="storageManageNumber"]').text(data.storageManageNumber);
+                $('[name="customerManageNumber"]').text(data.customerManageNumber);
+                $('[name="title"]').text(data.title);
+                $('[name="subtitle"]').text(data.subtitle);
+                $('[name="remark1"]').text(data.remark1);
+                $('[name="remark2"]').text(data.remark2);
+                $('[name="shape"]').text(data.shape);
+                $('[name="time"]').text(data.time);
+                $('[name="scrapScheduleDate"]').text(data.scrapScheduleDate);
+                $('[name="storageDate"]').text(data.storageDate);
+                $('[name="productDate"]').text(data.productDate);
+                $(".stockHistoryList").html(data.tableStr);
+            },
+            error: function (data) {
+            }
+        });
+    }
+
+    $("[name='searchOrder']").click(function () {
+        // ページ番号を１に戻す
+        var orderKey = $(this).data('order');
+
+        if (_orderKey == orderKey) {
+            // 昇順、降順を反転
+            _order = (_order === 0) ? 1 : 0;
+        }
+        else {
+            // オーダーキーの変更
+            _orderKey = orderKey;
+            _order = 0;
+        }
+
+        $("[name='stockHistoryTable']").find("[name='searchOrder']").each(function (index, element) {
+
+            //ソート順序がついていたら外す
+            $(this).text($(this).text().replace('▲', ''));
+            $(this).text($(this).text().replace('▼', ''));
+            $(this).text($(this).text().replace('●', ''));
+
+            if (index === _orderKey) {
+                if (_order === 0) {
+                    $(this).text('▲' + $(this).text());
+                }
+                else {
+                    $(this).text('▼' + $(this).text());
+                }
+            }
+            else {
+                //非選択の場合●をつける
+                $(this).text('●' + $(this).text());
+            }
+        });
+
+        searchStockHistory();
+    });
+
+</script>

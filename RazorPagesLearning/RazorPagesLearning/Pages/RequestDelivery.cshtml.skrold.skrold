@@ -1,0 +1,404 @@
+﻿@page
+@model RazorPagesLearning.Pages.RequestDeliveryModel
+@{
+    ViewData["Title"] = "RequestDelivery";
+}
+
+<!-- DataTablesを読み取るために必要なコンポーネントを取り込み -->
+<partial name="_DataTablesScriptsPartial" />
+
+<script>
+
+    $(document).ready(function () {
+
+        //チェックボックスのクリック時にチェック状態と
+        //要素のvalueの状態を同期させる
+        //これを入れないと、ASPで要素の選択状態を切り替えた後にpostした時に、
+        //正しくpostされるデータにチェック状態が反映されない。
+        VegaUtility.StaticFunctions.ASPHelper.registerEvent_SynchronizeTheCheckboxValue();
+
+        //テーブルをセットアップする
+        VegaUtility.StaticFunctions.TableHelper.setupTable(
+            {
+                //テーブル要素のID
+                tableElementID: "#searchTable",
+                //テーブル共通機能領域のサイズ(縦領域算出用)
+                tableCommonFunctionElementID: "#TableOperationFunctions",
+                //列左端　スクロール固定列数
+                leftScrollFixedColumns: 0,
+                //列のデフォルトカラムサイズ(省略可)
+                columnSize: [
+                    { width: '1rem', targets: 0 },
+                    { width: '4rem', targets: 1 }
+                ]
+            }
+        );
+
+        // 条件指示部の高さを結果一覧部に合わせる
+        //$('#Serch-terms').height($('#Serch-list').height());
+    });
+
+    ///ソート用にヘッダをクリックした時の動作
+    var onHeaderClickForSort = function (columnName) {
+
+        VegaUtility.StaticFunctions.TableHelper.onTableHeaderClickForSort(
+            {
+                //ソート対象となる列名はhiddenフィールドに入れてサーバサイドに送り、
+                //サーバー側で処理させる。
+                //ソート対象の列名が入るinput要素名
+                sortOrderName: "#viewModel_sortColumn",
+                //ソートの方向 : ASC or DES
+                sortOrder: "#viewModel_sortDirection",
+                //post対象となるフォーム名
+                formName: "form",
+                //ソートするカラム名
+                columnName: columnName
+            });
+    };
+
+</script>
+
+<article id="Request__done">
+    <form method="POST" action="">
+        @*ソートの項目内容を送る*@
+        <input type="hidden" asp-for="@Model.viewModel.sortColumn">
+        @* ソートの方向 ASC or DES *@
+        <input type="hidden" asp-for="@Model.viewModel.sortDirection" />
+
+        <div class="p-main-wrap__2col">
+            <section id="Serch-terms" style="position: relative;">
+                <article class="p-scroll__head" id="TableOperationFunctions">
+                    <h1>条件指示</h1>
+                    <article>
+                        <article class="p-buttom-wrap justify-content-between">
+                            <div class="o-message__state new" style="display: inline-block;">依頼内容：@MGL.Service.Utility.ViewHelper.HelperFunctions.toDomainValue(Model.viewModel.domainRequestKindList, Model.viewModel.requestKind)</div>
+                            @if (Model.viewModel.isDeliveryButton == true)
+                            {
+                                <button type="button" class="o-button__base" onclick="onShowPopSelectDerivery()">集荷先選択</button>
+                            }
+                        </article>
+                        <div class="o-border__bold__sm"></div>
+                    </article>
+                </article>
+                <article class="p-scroll__body left">
+                    <article class="u-wrap-mb">
+                        <div class="p-datachip">
+                            <h1>
+                                社名
+                            </h1>
+                            <p class="off" id="searchCompany">
+                                @Model.viewModel.wkDelivery.DELIVERY_ADMIN.COMPANY
+                                <input type="hidden" value="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.COMPANY" asp-for="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.COMPANY">
+                            </p>
+                        </div>
+                        <div class="p-datachip">
+                            <h1>
+                                部署名
+                            </h1>
+                            <p>
+                                <input type="text" placeholder="文字72字" value="@Model.viewModel.wkDelivery.DELIVERY_DEPARTMENT" asp-for="@Model.viewModel.wkDelivery.DELIVERY_DEPARTMENT" maxlength="72" size="14">
+                                <span asp-validation-for="@Model.viewModel.wkDelivery.DELIVERY_DEPARTMENT" class="text-danger"></span>
+                            </p>
+                        </div>
+                        <div class="p-datachip">
+                            <h1>
+                                担当者名
+                            </h1>
+                            <p>
+                                <input type="text" placeholder="文字72字" value="@Model.viewModel.wkDelivery.DELIVERY_CHARGE" asp-for="@Model.viewModel.wkDelivery.DELIVERY_CHARGE" maxlength="72" size="14">
+                                <span asp-validation-for="@Model.viewModel.wkDelivery.DELIVERY_CHARGE" class="text-danger"></span>
+                            </p>
+                        </div>
+                        <div class="p-datachip">
+                            <h1>
+                                郵便番号
+                            </h1>
+                            <p class="off" id="searchZipCode">
+                                @Model.viewModel.wkDelivery.DELIVERY_ADMIN.ZIPCODE
+                                <input type="hidden" value="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.ZIPCODE" asp-for="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.ZIPCODE">
+                            </p>
+                        </div>
+                        <div class="p-datachip">
+                            <h1>
+                                住所
+                            </h1>
+                            <p class="off" id="searchAddress">
+                                @Model.viewModel.wkDelivery.DELIVERY_ADMIN.ADDRESS1
+                                @Model.viewModel.wkDelivery.DELIVERY_ADMIN.ADDRESS2
+                                <input type="hidden" value="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.ADDRESS1" asp-for="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.ADDRESS1">
+                                <input type="hidden" value="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.ADDRESS2" asp-for="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.ADDRESS2">
+                            </p>
+                        </div>
+                        <div class="p-datachip">
+                            <h1>
+                                TEL
+                            </h1>
+                            <p class="off" id="searchTel">
+                                @Model.viewModel.wkDelivery.DELIVERY_ADMIN.TEL
+                                <input type="hidden" value="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.TEL" asp-for="@Model.viewModel.wkDelivery.DELIVERY_ADMIN.TEL">
+                            </p>
+                        </div>
+                        <div class="o-border__bold__sml"></div>
+                        <div class="p-datachip">
+                            <h1>
+                                便
+                            </h1>
+                            <p>
+                                <select asp-for="@Model.viewModel.selectFlight" asp-items="@Model.viewModel.flightList">
+                                    <option value=""></option>
+                                </select>
+                            </p>
+                        </div>
+                        <div class="p-datachip">
+                            <h1>
+                                @Model.viewModel.specifiedDateString
+                            </h1>
+                            <p>
+                                <input type="text" id="datepicker" value="@MGL.Service.Utility.ViewHelper.HelperFunctions.toFormattedString(Model.viewModel.wkDelivery.SPECIFIED_DATE)" asp-for="@Model.viewModel.wkDelivery.SPECIFIED_DATE">
+                                <input type="hidden" value="@Model.viewModel.wkDelivery.SPECIFIED_DATE" asp-for="@Model.viewModel.wkDelivery.SPECIFIED_DATE">
+                            </p>
+                            <p>
+                                <select asp-for="@Model.viewModel.selectTargetTime" asp-items="@Model.viewModel.targetTimeList">
+                                    <option value=""></option>
+                                </select>
+                            </p>
+                        </div>
+                        <div class="o-border__bold__sml"></div>
+                        <div class="p-datachip">
+                            <h1>
+                                コメント
+                            </h1>
+                            <p>
+                                <textarea name="" id="" cols="30" rows="10" maxlength="100" placeholder="文字100字">@Model.viewModel.wkDelivery.COMMENT</textarea>
+                                <input type="hidden" value="@Model.viewModel.wkDelivery.COMMENT" asp-for="@Model.viewModel.wkDelivery.COMMENT">
+                            </p>
+                        </div>
+                    </article>
+                </article>
+            </section>
+            <section>
+                <article class="p-scroll__head">
+                    <h1>結果一覧</h1>
+                    <article>
+                        <article class="p-buttom-wrap">
+                            <button type="submit" class="o-button__base" asp-page-handler="back">戻る</button>
+                            <button type="submit" class="o-button__done" asp-page-handler="confirm">確定</button>
+                        </article>
+                        <div class="o-border__bold"></div>
+                        <article class="p-table-sort">
+                            <article class="u-wrap-mr">
+                                <div class="p-datachip">
+                                    <h1>
+                                        表示件数
+                                    </h1>
+                                    <p>
+                                        <select asp-for=@Model.paginationInfo.displayNumber asp-items="Model.paginationInfo.displayNumbers"
+                                                onchange="submit(this.form)"></select>
+                                    </p>
+                                </div>
+                            </article>
+                            @* ページネーション *@
+                            <article>
+                                <article class="p-pager-num">
+                                    <p>
+                                        <span>@Model.paginationInfo.startViewItemIndex ～ @Model.paginationInfo.endViewItemIndex</span>
+                                        <span>/@Model.paginationInfo.maxItems 件</span>
+                                    </p>
+                                </article>
+                                <pagination-pager info="@Model.paginationInfo" for="@Model.paginationInfo"> </pagination-pager>
+                            </article>
+                        </article>
+                        <div class="o-border__bold__sm"></div>
+                    </article>
+                </article>
+                <article class="p-scroll__body right">
+                    <div class="p-table">
+                        <table id="searchTable" class="table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_STORAGE_MANAGE_NUMBER">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_STORAGE_MANAGE_NUMBER')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_STORAGE_MANAGE_NUMBER")
+                                        </span>
+                                        倉庫管理番号
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_STATUS">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_STATUS')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_REQUEST_DELIVERY_STATUS")
+                                        </span>
+                                        ステータス
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_TITLE">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_TITLE')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_TITLE")
+                                        </span>
+                                        題名
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_SUBTITLE">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_SUBTITLE')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_SUBTITLE")
+                                        </span>
+                                        副題
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_NOTE">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_NOTE')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_NOTE")
+                                        </span>
+                                        備考
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_SHIPPER_NOTE">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_SHIPPER_NOTE')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_SHIPPER_NOTE")
+                                        </span>
+                                        荷主項目
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_CUSTOMER_MANAGE_NUMBER">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_CUSTOMER_MANAGE_NUMBER')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_REQUEST_DELIVERY_CUSTOMER_MANAGE_NUMBER")
+                                        </span>
+                                        お客様管理番号
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_PROCESSING_DATE">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_PROCESSING_DATE')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_PROCESSING_DATE")
+                                        </span>
+                                        処理日
+                                    </th>
+                                    <th style="width: 2.5rem;" save-column-width-size-name="REQUEST_DELIVERY_SHAPE">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_SHAPE')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_SHAPE")
+                                        </span>
+                                        形状
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_REMARK1">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_REMARK1')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_REMARK1")
+                                        </span>
+                                        Remark1
+                                    </th>
+                                    <th save-column-width-size-name="REQUEST_DELIVERY_REMARK2">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_REMARK2')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_REMARK2")
+                                        </span>
+                                        Remark2
+                                    </th>
+                                    <th style="width:4rem;" save-column-width-size-name="REQUEST_DELIVERY_STOCK_COUNT">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_STOCK_COUNT')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_STOCK_COUNT")
+                                        </span>
+                                        在庫数
+                                    </th>
+                                    <th style="width:4rem;" save-column-width-size-name="REQUEST_DELIVERY_REQUEST_COUNT">
+                                        <span onclick="onHeaderClickForSort('REQUEST_DELIVERY_REQUEST_COUNT')">
+                                            @Model.viewModel.getTargetSortSign("REQUEST_DELIVERY_REQUEST_COUNT")
+                                        </span>
+                                        依頼数
+                                    </th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+
+                                @* ここでforeachを回す *@
+                                @foreach (var (item, index) in Model.viewModel.tableRows[0].data.WK_REQUEST_DETAILs.Select((item, index) => (item, index)))
+                                {
+                                    <tr>
+                                        <td>
+                                            <div>@item.STOCK.STORAGE_MANAGE_NUMBER</div>
+                                        </td>
+                                        <td>
+                                            <div>@MGL.Service.Utility.ViewHelper.HelperFunctions.toDomainValue(Model.viewModel.domainStatusList, item.STOCK.STATUS)</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.TITLE</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.SUBTITLE</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.NOTE</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.SHIPPER_NOTE</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.CUSTOMER_MANAGE_NUMBER</div>
+                                        </td>
+                                        <td>
+                                            <div>@MGL.Service.Utility.ViewHelper.HelperFunctions.toFormattedString(item.STOCK.PROCESSING_DATE)</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.SHAPE</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.REMARK1</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.REMARK2</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.STOCK.STOCK_COUNT</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.REQUEST_COUNT</div>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+            @*hiddenで送る必要があるもの*@
+            @*対象の作業依頼ワークID*@
+            <input type="hidden" value="@Model.viewModel.wkRequestId" asp-for="@Model.viewModel.wkRequestId">
+            @*対象の作業内容情報*@
+            <input type="hidden" value="@Model.viewModel.requestKind" asp-for="@Model.viewModel.requestKind">
+            @*選択された集配先マスタID*@
+            <input type="hidden" id="searchMwlDeliveryId" value="@Model.viewModel.mwlDeliveryId" asp-for="@Model.viewModel.mwlDeliveryId">
+
+        </div>
+
+        <!--　[開始] 集配先選択モーダル画面 -->
+        <partial name="PopUp/_PopSelectDerivery" for="@Model.selectDeriveryModelViewModel" />
+
+    </form>
+</article>
+
+<script type="text/javascript">
+    //集配先選択ポップアップを表示
+    var onShowPopSelectDerivery = function () {
+        VegaUtility.StaticFunctions.PopUp.show("#modal-cargo__select");
+    }
+
+    //ページロード時
+    $(document).ready(function () {
+
+        var m = $("[ id$=isShowModal]").val();
+        if (true == VegaUtility.StaticFunctions.Helpers.parseBoolean(m)) {
+
+            //モーダル表示中だったら、モーダルを表示する
+            onShowPopSelectDerivery();
+
+        }
+
+        //ページを開いたら、ローディング表示を非表示に
+        VegaUtility.StaticFunctions.LoadingSplash.hide();
+
+    });
+
+    $(function () {
+
+        $('#searchMwlDeliveryId').change(function () {
+
+            //値が変化したら発火
+            //var mwlDeliveryId = $(this).val();
+
+            var tForm = $('form');
+            tForm.attr('action', '?handler=delivery');
+            tForm.submit();
+        });
+    });
+
+</script>
