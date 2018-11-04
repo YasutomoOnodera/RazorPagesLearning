@@ -1,0 +1,73 @@
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject RazorPagesLearningContext db
+
+@if (SignInManager.IsSignedIn(User))
+{
+    //ユーザー関係の情報を取得
+    var userService = new RazorPagesLearning.Service.User.UserService(db, User, SignInManager, UserManager);
+    var r = await UserManager.GetUserAsync(User);
+    var userInfo = userService.read(Int64.Parse(r.UserName));
+
+    //隠し要素として確認が必要かのフラグを持たせておく
+    <span hidden id="is-need-not-user-confirm-dialog-flag">@userInfo.CONFIRM_FLAG</span>
+
+
+    <div class="d-flex justify-content-end align-items-center">
+        <div class="mr-3 d-flex align-items-center">
+            <div>
+                <img src="../img/shipper.svg" alt="" width="30">
+            </div>
+            <div class="ml-2">
+                @{
+                    var shipperName = await userService.getShipperNameForFrame();
+                    @shipperName;
+                }
+            </div>
+        </div>
+        <div class="mr-3">
+            <div id="accordion" role="tablist" class="e-position-relative">
+                <div>
+                    <div role="tab" id="headingOne">
+                        <div class="mb-0">
+                            <a class="p-1" data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <div class="mr-3 d-flex align-items-center">
+                                    <div>
+                                        <img src="../img/user.svg" alt="" width="38">
+                                    </div>
+                                    <div class="ml-2">
+                                        @{
+                                            @userInfo.NAME;
+                                        } ▼
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div id="collapseOne" class="collapse w-100 e-position-absolute text-center" role="tabpanel" aria-labelledby="headingOne"
+                         data-ex="collapse-contents" style="z-index:5">
+                        @if ((true == User.IsInRole(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.Worker.ToString()))
+                      || (true == User.IsInRole(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.Admin.ToString()))
+                      || (true == User.IsInRole(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperBrowsing.ToString()))
+                      || (true == User.IsInRole(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperEditing.ToString()))
+                      )
+                        {
+                            <a asp-page="AccountInfo" class="p-1 bg-info">ユーザ情報変更</a>
+                        }
+                        <a asp-page="AccountPassword" asp-route-isInFrame ="true" class="p-1 bg-info">パスワード変更</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <a asp-page="LogOut" class="o-button__logout" id="button-logout">ログアウト</a>
+        </div>
+    </div>
+}
+else
+{
+    <!-- サインイン状態が正しくなかったらログアウトさせる -->
+    <a asp-page="LogOut" class="o-button__logout" id="button-logout">ログアウト</a>
+}

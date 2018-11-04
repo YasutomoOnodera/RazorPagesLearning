@@ -1,0 +1,238 @@
+﻿@page
+@model RazorPagesLearning.Pages.RequestDirectModel
+@{
+    ViewData["Title"] = "RequestDirect";
+}
+
+<!-- 本文 -->
+
+<div id="Wrap">
+    <form method="POST" name="dform" id="RequestDirectListForm" asp-page-handler="Create">
+        <div class="p-page-title">
+            荷主メニュー/
+            <span>再入庫ダイレクト指定</span>
+        </div>
+
+        <article id="Message" class="p-main-wrap__2col">
+            <section>
+                <h1>バーコード入力</h1>
+                <article>
+                    <article class="p-buttom-wrap">
+                        @{  var erCheck = Model.viewModel.createErrorMessage;
+                            if (erCheck == null)
+                            {
+                                <button class="o-button__clear" disabled>クリア</button>
+                            }
+                            @*エラーメッセージあり*@
+                            else
+                            {
+                                <button type="button" class="o-button__clear" id="clearButton">クリア</button>
+                            }
+                        }
+                    </article>
+                    <p class="o-border__bold__sm"></p>
+                    <div class="u-wrap-mb">
+                        <div class="p-datachip">
+                            <h1>バーコード</h1>
+                            <p>
+                                <input type="text" id="barcodeval" maxlength="9" onKeyPress="enter();" placeholder="文字9字" value="@Model.viewModel.Barcode" asp-for="@Model.viewModel.Barcode">
+                            </p>
+                        </div>
+                    </div>
+                    @*エラーメッセージ表示*@
+                    @{
+                       var erdisp = Model.viewModel.createErrorMessage;
+                        if(erdisp == null)
+                        {
+                            @*何も表示しない*@
+                        }
+                        else
+                        {
+                            <div class="o-message__error mt-2">
+                                @Html.DisplayFor(e => erdisp)
+                            </div>
+                        }
+                    }
+                </article>
+            </section>
+
+            <section>
+                <h1>一覧</h1>
+                <article>
+                    <div class="p-buttom-wrap">
+                        <button type="button" id="AddRequestButton" class="o-button__done__2row">作業依頼追加</button>
+                        <div class="o-button__del" id="DeleteButton">削除</div>
+                    </div>
+                    <div class="o-border__bold"></div>
+                    <article class="p-table-sort">
+                        <article class="p-pager-num justify-content-start">
+                            <span id="checkret"></span>件選択しました。
+                        </article>
+                    </article>
+                    <div class="o-border__bold__sm"></div>
+                    <div class="p-table">
+                        <table id="direct-selection" class="table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:2rem;text-align: center;">▼No</th>
+                                    <th style="width:2rem; text-align: center;">
+                                        <input type="checkbox" id="direct-selection-all-checkbox" onclick="onDirectSelectionCheckbox()">
+                                    </th>
+                                    <th style="width:12rem;">▼倉庫管理番号</th>
+                                    <th style="width:12rem;">▼お客様管理番号</th>
+                                    <th>▼題名</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl">
+                                @{ var wkstktmp = Model.viewModel.val_WK_STOCKs;
+                                    @*nullの場合*@
+                                    if (wkstktmp == null)
+                                    {
+                                        @*何も表示しない*@
+                                    }
+                                    else
+                                    {
+                                        int count = 0;
+                                        foreach (var disp in Model.viewModel.val_WK_STOCKs
+                                        .Select((item, index) => new { item, index }))
+                                        {
+                                            // WK_STOCKの中身表示
+                                            <tr>
+                                                @{count++;}
+                                                <td style="text-align: center;">@count</td>
+                                                <td style="text-align: center;">
+                                                    <input type="checkbox" id="directcbox" value="@Model.viewModel.val_WK_STOCKs[disp.index].selected" asp-for="@Model.viewModel.val_WK_STOCKs[disp.index].selected" onclick="directCheckCount()">
+                                                    <input type="hidden" asp-for="@Model.viewModel.val_WK_STOCKs[disp.index].WkStockList.STOCK_ID">
+                                                </td>
+                                                <td>@Html.DisplayFor(e => disp.item.WkStockList.STORAGE_MANAGE_NUMBER)</td>
+                                                <td>@Html.DisplayFor(e => disp.item.WkStockList.CUSTOMER_MANAGE_NUMBER)</td>
+                                                <td>@Html.DisplayFor(e => disp.item.WkStockList.TITLE)</td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </article>
+    </form>
+</div>
+
+<!-- バリデーションライブラリをロード -->
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //チェックボックスのクリック時にチェック状態と
+        //要素のvalueの状態を同期させる
+        //これを入れないと、ASPで要素の選択状態を切り替えた後にpostした時に、
+        //正しくpostされるデータにチェック状態が反映されない。
+        VegaUtility.StaticFunctions.ASPHelper.registerEvent_SynchronizeTheCheckboxValue();
+    });
+
+    // エンターキーを押されたら送信
+    function enter() {
+        if (window.event.keyCode == 13) {
+            document.dform.submit();
+        }
+    }
+
+    // クリア
+    $(function () {
+        $("#clearButton").click(function () {
+            // テキストボックスのデータを空にします
+            $("#barcodeval").val("");
+        });
+    });
+
+    // 削除 確認ダイアログ
+    (function () {
+        $('#DeleteButton').click(function () {
+            $.confirm({
+                title: '削除',
+                content: '選択した依頼を削除しますか？',
+                buttons: {
+                    'OK': function () {
+                        //該当フォームに対して登録命令を出す
+                        var tForm = $('#RequestDirectListForm');
+                        tForm.attr('action', '?handler=Delete');
+                        tForm.submit();
+                    },
+                    'キャンセル': function () {
+                    }
+                }
+            });
+        });
+    })();
+
+
+    // 作業依頼追加 確認ダイアログ
+    (function () {
+        $('#AddRequestButton').click(function () {
+            $.confirm({
+                title: '作業依頼追加',
+                content: '選択した作業依頼を追加しますか？',
+                buttons: {
+                    'OK': function () {
+                        //該当フォームに対して登録命令を出す
+                        var tForm = $('#RequestDirectListForm');
+                        tForm.attr('action', '?handler=Request');
+                        tForm.submit();
+                    },
+                    'キャンセル': function () {
+                    }
+                }
+            });
+        });
+    })();
+
+    // チェックボックスのチェック数を取得
+    $(function () {
+        $('input:checkbox').change(function () {
+            var cnt = $('#tbl input:checkbox:checked').length;
+            $('#checkret').text(cnt);
+        }).trigger('change');
+    });
+
+    // 一括チェック選択ボックスを選択された時のイベント
+    var onDirectSelectionCheckbox = function () {
+
+        //チェックボックスの状態を取得する
+        var cBox = $('#direct-selection-all-checkbox');
+        var tChecked = cBox.prop('checked');
+
+        //変更対象となるセレクタ
+        var targetElement = $('#direct-selection :checkbox')
+        .not("#direct-selection-all-checkbox");
+
+
+        if (true == tChecked) {
+            //チェックされていたらテキストボックスを有効化
+            targetElement
+                .each(function (i, ele) {
+                    $(ele).prop('checked', true);
+                    $(ele).val(true);
+                });
+        }
+        else {
+            //チェックされていたらテキストボックスを無効化
+            targetElement
+                .each(function (i, ele) {
+                    $(ele).prop('checked', false);
+                    $(ele).val(false);
+                });
+        }
+    };
+
+    $(document).ready(function () {
+        //ページを開いたら、ローディング表示を非表示に
+        VegaUtility.StaticFunctions.LoadingSplash.hide();
+    });
+
+</script>
+

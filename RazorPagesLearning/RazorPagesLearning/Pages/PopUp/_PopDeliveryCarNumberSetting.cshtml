@@ -1,0 +1,129 @@
+﻿@model RazorPagesLearning.Pages.PopUp.DeliveryCarNumberSetting
+<!-- 車番号設定モーダル画面 -->
+
+<script>
+
+    //他画面にインクルードされるので名前空間で区切る
+    var DeliveryCarNumberSetting = DeliveryCarNumberSetting || {};
+
+    ///決定ボタンが押下された時の処理
+    DeliveryCarNumberSetting.onDecision = function () {
+
+        //隠しを表示
+        VegaUtility.StaticFunctions.LoadingSplash.show();
+
+        //サーバへ送信する
+        (function () {
+
+            //指定されたヘッダー名の関数へ飛ぶ
+            var handlerName = "@Model.onDecisionHeaderName";
+
+            var tForm = $('form');
+            tForm.attr('action', '?handler=' + handlerName);
+            tForm.submit();
+
+        })();
+
+    };
+
+    //列要素のクリアボタン押下時の動作
+    DeliveryCarNumberSetting.onClearInputColumn = function (lineIndex) {
+
+        //指定された列の横方向の入力値をクリアする
+        var target = $('[id^="deliveryCarNumberSetting_viewModel_TRUCK_ADMINs_' + lineIndex + '_"]')
+            .filter(function (index, element) {
+                return /.*\.(NUMBER|CHARGE)$/.test(element.name);
+        });
+
+        //要素をクリアする
+        target.each(function (i, ele) {
+            $(ele).val("");
+        });
+
+    };
+
+</script>
+
+<section class="modal-window" id="modal-shipper-car_number">
+    <div class="modal-inner p-modal">
+        <article class="p-modal__title">
+            <h1 class="o-plate__title">車番設定</h1>
+            <div class="p-modal__grobal__nav">
+                <div onclick="DeliveryCarNumberSetting.onDecision()" class="o-button__done">確定</div>
+                <button type="button">
+                    <a href="#!" type="button " class="o-button__close"></a>
+                </button>
+            </div>
+        </article>
+        <article class="p-modal__contents">
+
+            <!-- エラーメッセージ表示 -->
+            @if ((null != Model.viewModel.errorMessage) &&
+        (String.Empty != Model.viewModel.errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+
+                    @Model.viewModel.errorMessage
+
+                </div>
+            }
+
+            @* ページ間を跨いだ保存要素 *@
+            @*<input type="hidden" asp-for="@Model.viewModel.isShowModal">*@
+            <input type="hidden" asp-for="@Model.TRANSPORT_ADMIN_CODE" value="@Model.TRANSPORT_ADMIN_CODE">
+
+            @* 要素を表示 *@
+            @if (null != Model.viewModel.TRUCK_ADMINs)
+            {
+                @foreach (var (item, index) in Model.viewModel.TRUCK_ADMINs.Select((item, index)
+                         => (item, index)))
+                {
+
+                    <input type="hidden" asp-for="@Model.viewModel.TRUCK_ADMINs[index].TRUCK_MANAGE_NUMBER"
+                           value="@Model.viewModel.TRUCK_ADMINs[index].TRUCK_MANAGE_NUMBER">
+                    <input type="hidden" asp-for="@Model.viewModel.TRUCK_ADMINs[index].collisionDetection_Timestamp"
+                           value="@Model.viewModel.TRUCK_ADMINs[index].collisionDetection_Timestamp">
+
+                    <section class="d-flex u-grow-1">
+                        <div class="p-form-list">
+                            <h1 style="width: 4rem;">
+                                車番
+                                @item.TRUCK_MANAGE_NUMBER
+                            </h1>
+                            <p>
+                                <input type="text"
+                                       asp-for="@Model.viewModel.TRUCK_ADMINs[index].NUMBER"
+                                       disabled="@Model.viewModel.isNotEditable">
+                            </p>
+                        </div>
+                        <div class="p-form-list ml-3">
+                            <h1 style="width: 4rem;">
+                                担当者
+                                @item.TRUCK_MANAGE_NUMBER
+                            </h1>
+                            <p>
+                                <input type="text"
+                                       asp-for="@Model.viewModel.TRUCK_ADMINs[index].CHARGE"
+                                       disabled="@Model.viewModel.isNotEditable">
+                            </p>
+
+
+                        </div>
+
+                        <div>
+                            <button type="button"
+                                    class="o-button__base"
+                                    style="margin-bottom: 10px; margin-left: 5px; display: table;"
+                                    onclick="DeliveryCarNumberSetting.onClearInputColumn(@index)">
+                                クリア
+                            </button>
+                        </div>
+
+                    </section>
+                }
+            }
+
+        </article>
+    </div>
+    <a href="#! " class="modal-close">×</a>
+</section>

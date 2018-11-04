@@ -1,0 +1,915 @@
+﻿@* Add Noda *@
+
+@page "{id:int?}"
+@model RazorPagesLearning.Pages.SelectDeriveryModel
+@{
+    ViewData["Title"] = "SelectDerivery";
+}
+
+
+<!-- Del Noda -->
+<!--
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/superTables.css">
+    <link rel="stylesheet" href="../css/spectrum.css">
+</head>
+<body>
+    <header id="Header">
+        <article class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col">
+                    <a href="home.html" class="logo">
+                        <img src="../img/logo.png" alt="" width="89">
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <img src="../img/clock.svg" alt="" width="19">
+                    <span>2018/6/5(火)2:59</span>
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="mr-3 d-flex align-items-center">
+                            <div>
+                                <img src="../img/shipper.svg" alt="" width="30">
+                            </div>
+                            <div class="ml-2">
+                                山田太郎
+                            </div>
+                        </div>
+                        <div class="mr-3">
+                            <div id="accordion" role="tablist" class="e-position-relative">
+                                <div>
+                                    <div role="tab" id="headingOne">
+                                        <div class="mb-0">
+                                            <a class="p-1" data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                <div class="mr-3 d-flex align-items-center">
+                                                    <div>
+                                                        <img src="../img/user.svg" alt="" width="38">
+                                                    </div>
+                                                    <div class="ml-2">
+                                                        山田太郎 ▼
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div id="collapseOne" class="collapse w-100 e-position-absolute text-center" role="tabpanel" aria-labelledby="headingOne"
+                                         data-ex="collapse-contents">
+                                        <a href="account.html" class="p-1 bg-info">ユーザ情報変更</a>
+                                        <a href="password.html" class="p-1 bg-info">パスワード変更</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <a href="index.html" class="o-button__logout" id="button-logout">ログアウト</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </header>
+    <div id="Wrap">
+        <nav id="Nav" class="ui-resizable" style="font-size: 12px; width: 180px;">
+            <ul>
+                <li>
+                    <a href="home.html" class="title" data-name="home">
+                        <div>
+                            <img src="../img/icon-home.svg" alt="" width="15">
+                        </div>
+                        <div>ホーム</div>
+                        <div></div>
+                    </a>
+                </li>
+                <li>
+                    <div class="title j-ac-title">
+                        <div>
+                            <img src="../img/shipper.svg" alt="" width="15">
+                        </div>
+                        <div>荷主メニュー</div>
+                        <div>
+                            <img src="../img/icon-nav-arrow.svg" alt="" width="15" class="u-180deg j-nav-icon">
+                        </div>
+                    </div>
+                    <dl>
+                        <dd>
+                            <a href="search.html" data-name="search">検索</a>
+                        </dd>
+                        <dd>
+                            <a href="request.html" data-name="request">作業依頼</a>
+                        </dd>
+                        <dd>
+                            <a href="watch.html" data-name="watch">ウォッチリスト</a>
+                        </dd>
+                        <dd>
+                            <a href="request__history.html" data-name="request__history">依頼履歴</a>
+                        </dd>
+                        <dd>
+                            <a href="new.html" data-name="new">新規登録</a>
+                        </dd>
+                        <dd>
+                            <a href="import-data.html" data-name="import-data">データ取込</a>
+                        </dd>
+                        <dd>
+                            <a href="direct.html" data-name="direct">再入庫ダイレクト指定</a>
+                        </dd>
+                        <dd>
+                            <a href="cargo.html" data-name="cargo">集配先マスタ一覧</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li>
+                    <div class="title j-ac-title">
+                        <div>
+                            <img src="../img/icon-shipping.svg" alt="" width="15">
+                        </div>
+                        <div>運送会社メニュー</div>
+                        <div>
+                            <img src="../img/icon-nav-arrow.svg" alt="" width="15" class="u-180deg j-nav-icon">
+                        </div>
+                    </div>
+                    <dl>
+                        <dd>
+                            <a href="shipper.html" data-name="shipper">自社便用集荷配送依頼</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li>
+                    <div class="title j-ac-title">
+                        <div>
+                            <img src="../img/icon-worker.svg" alt="" width="15">
+                        </div>
+                        <div>作業者メニュー</div>
+                        <div>
+                            <img src="../img/icon-nav-arrow.svg" alt="" width="15" class="u-180deg j-nav-icon">
+                        </div>
+                    </div>
+                    <dl>
+                        <dd>
+                            <a href="calendar.html" data-name="calendar">カレンダーマスタ</a>
+                        </dd>
+                        <dd>
+                            <a href="message.html" data-name="message">メッセージマスタ</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li>
+                    <div class="title j-ac-title">
+                        <div>
+                            <img src="../img/icon-management.svg" alt="" width="15">
+                        </div>
+                        <div>管理者メニュー</div>
+                        <div>
+                            <img src="../img/icon-nav-arrow.svg" alt="" width="15" class="u-180deg j-nav-icon">
+                        </div>
+                    </div>
+                    <dl>
+                        <dd>
+                            <a href="account-user.html" data-name="account-user">ユーザアカウント</a>
+                        </dd>
+                        <dd>
+                            <a href="security.html" data-name="security">セキュリティポリシー管理</a>
+                        </dd>
+                        <dd>
+                            <a href="calendar.html" data-name="calendar_a">カレンダーマスタ</a>
+                        </dd>
+                        <dd>
+                            <a href="message.html" data-name="message_b">メッセージマスタ</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li>
+                    <a href="sale.html" class="title" data-name="sale">
+                        <div>
+                            <img src="../img/shop.svg" alt="" width="16">
+                        </div>
+                        <div>資材販売</div>
+                        <div></div>
+                    </a>
+                </li>
+                <li>
+                    <a href="../doc/manual.pdf" class="title" data-name="manual">
+                        <div>
+                            <img src="../img/icon-download.svg" alt="" width="15">
+                        </div>
+                        <div>マニュアルダウンロード</div>
+                        <div></div>
+                    </a>
+                </li>
+            </ul>
+            <div class="p-button__small">
+                <img src="../img/icon-scale.svg" alt="" width="45" class="j-small">
+            </div>
+        </nav>
+        <main id="Main">
+            <div class="p-page-title">
+                荷主メニュー/
+                <span>新規登録</span>
+            </div>
+            <article id="New" class="p-main-wrap__2col">
+                <section>
+                    <article class="p-scroll__head">
+                        <h1>検索条件</h1>
+                        <article>
+                            <div class=" p-buttom-wrap">
+                                <button type="button" class="o-button__clear">クリア</button>
+                                <a href="#modal-cargo__select" class="o-button__done">更新</a>
+                            </div>
+                            <div class="o-border__bold"></div>
+                        </article>
+                    </article>
+                    <article class="p-scroll__body right">
+                        <article class="u-wrap-mb">
+                            <div class="p-datachip">
+                                <h1>部課</h1>
+                                <p>
+                                    <select name="部課">
+                                        <option value="部課1">部課1</option>
+                                        <option value="部課2">部課2</option>
+                                        <option value="部課3">部課3</option>
+                                    </select>
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>区分1</h1>
+                                <p>
+                                    <select name="区分1">
+                                        <option value="フィルム">フィルム</option>
+                                        <option value="ビデオ">ビデオ</option>
+                                        <option value="その他">その他</option>
+                                        <option value="オーディオ">オーディオ</option>
+                                        <option value="機材">機材</option>
+                                    </select>
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>区分2</h1>
+                                <p>
+                                    <select name="区分2">
+                                        <option value="原版">原版</option>
+                                        <option value="素材">素材</option>
+                                        <option value="その他">その他</option>
+                                        <option value="コピー原版">コピー原版</option>
+                                        <option value="EM">EM</option>
+                                        <option value="プリント">プリント</option>
+                                        <option value="COPY">COPY</option>
+                                    </select>
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>お客様管理番号</h1>
+                                <p>
+                                    <input type="text" maxlength="30">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>題名</h1>
+                                <p>
+                                    <input type="text" maxlength="200">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>副題</h1>
+                                <p>
+                                    <input type="text" maxlength="200">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>Remark1</h1>
+                                <p>
+                                    <input type="text" maxlength="72">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>Remark2</h1>
+                                <p>
+                                    <input type="text" maxlength="72">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>備考</h1>
+                                <p>
+                                    <input type="text" maxlength="200">
+                                </p>
+                            </div>
+                            <div class="p-datachip u-grow-1">
+                                <h1>荷主項目</h1>
+                                <div class="d-flex" style="padding: 5px;border: solid 1px #E1E6EF;">
+                                    <div class="w-100">
+                                        <div class="d-flex">
+                                            <textarea name="" id="" cols="3" rows="3" maxlength="2000"></textarea>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <span>0</span>/1000
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>形状</h1>
+                                <p>
+                                    <input type="text" maxlength="20">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>制作日</h1>
+                                <p>
+                                    <input type="text">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>時間(1)</h1>
+                                <p>
+                                    <input type="text" maxlength="3">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>時間(2)</h1>
+                                <p>
+                                    <input type="text" maxlength="3">
+                                </p>
+                            </div>
+                            <div class="p-datachip">
+                                <h1>廃棄予定日</h1>
+                                <p>
+                                    <input type="text">
+                                </p>
+                            </div>
+                        </article>
+                    </article>
+                    <article style="padding-top:0;">
+                        <div class="o-border__bold__sm"></div>
+                        <div class="u-wrap-mb">
+                            <div>XX行目編集中</div>
+                            <div class="o-message__error">エラーメッセージ</div>
+                            <div class="o-message__base">
+                                倉庫から荷主への依頼事項を表示
+                            </div>
+                        </div>
+                    </article>
+                </section>
+                <section>
+                    <h1>表示件数表示件数</h1>
+                    <article>
+                        <div class="p-buttom-wrap">
+                            <button type="button" class="o-button__done__2row">作業依頼追加</button>
+                            <div class="o-button__del">削除</div>
+                        </div>
+                        <div class="o-border__bold"></div>
+                        <article class="p-table-sort">
+                            <article class="p-pager-num justify-content-start">
+                                <p>
+                                    <span>10</span>
+                                    <span>件選択しました。</span>
+                                </p>
+                            </article>
+                        </article>
+                        <div class="o-border__bold__sm"></div>
+                        <div class="p-table" style="padding-right:0;">
+                            <table id="demoTableA" class="table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:2rem;text-align: center;">▼No</th>
+                                        <th style="width:2rem; text-align: center;">
+                                            <input type="checkbox">
+                                        </th>
+                                        <th style="width:4rem;">
+                                        </th>
+                                        <th style="width:8rem;">お客様管理番号</th>
+                                        <th>題名</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            1
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            2
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            3
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            4
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            5
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            6
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            7
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            8
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            9
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            10
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="" style="background-color:#eab577">編集</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="o-message__base mt-2">
+                            編集ボタンをクリックすると、表示されているデータを編集する事ができます。
+                        </div>
+                    </article>
+                </section>
+            </article>
+        </main>
+    </div>
+    <footer id="Footer">
+        Copyright(C)2018 MGL Co.,Ltd All right Reserved.
+    </footer>
+    <section class="modal-window" id="modal-cargo__select">
+-->
+<!--Add Noda-->
+<form name="FrmSelectDerivery" method="Post">
+
+    <div class="modal-inner p-modal">
+        <article class="p-modal__title">
+            <h1 class="o-plate__title">集配先選択</h1>
+            <div class="p-modal__grobal__nav">
+                <button type="button">
+                    <a href="#!" type="button " class="o-button__close"></a>
+                </button>
+            </div>
+        </article>
+        <article class="p-modal__contents">
+            <article id="Message" class="p-main-wrap__2col">
+                <section>
+                    <h1>検索条件</h1>
+                    <article class="u-wrap-mb">
+                        <div class=" p-buttom-wrap">
+
+                            <!--Chg Noda-->
+                            <input type="submit" asp-page-handler="Search" class="o-button__base" value="検索"><a></a>
+                            <!--
+                            <a href="#modal-new" class="o-button__base">検索</a>
+                            -->
+                            <!--Chg Noda-->
+                            <button type="button" class="o-button__clear" onclick="ClearTxtSearchStr()">クリア</button>
+                            <!--
+                            <button type="button" class="o-button__clear">クリア</button>
+                            -->
+                        </div>
+                        <div class="o-border__bold"></div>
+                        <div class="p-datachip">
+                            <h1>
+                                社名
+                            </h1>
+                            <p>
+                                <!--Chg Noda-->
+                                <input type="text" value="" maxlength="40" size="14" asp-for="@Model.mSearchStr">
+                                <input type="radio" value="AND" checked="checked" asp-for="@Model.mSearchAndOr">
+                                <span>AND</span>
+                                <input type="radio" value="OR" checked="" asp-for="@Model.mSearchAndOr">
+                                <span>OR</span>
+                                <!--
+                                <input type="text" name="" value="" maxlength="40" size="14">
+                                <input type="radio" name="test" value="AND" checked="checked" />
+                                <span>AND</span>
+                                <input type="radio" name="test" value="OR" checked="">
+                                <span>OR</span>
+                                -->
+                            </p>
+                        </div>
+                        <div class="p-datachip border-clear grow-none">
+                            <p>
+                                全ての集配先を表示する
+                            </p>
+                            <p>
+                                <input type="checkbox">
+                            </p>
+                        </div>
+                    </article>
+                </section>
+                <section class="h-100">
+                    <h1>検索結果</h1>
+                    <article>
+                        <div class="c-o-plate__message">集荷先を選択してください</div>
+                        <div class="mt-2"></div>
+                        <article class="p-table-sort">
+                            <article class="u-wrap-mr">
+                                <div class="p-datachip">
+                                    <h1>
+                                        表示件数
+                                    </h1>
+                                    <p>
+                                        <select name="表示件数">
+                                            <option value="100">100</option>
+                                            <option value="200">200</option>
+                                            <option value="300">300</option>
+                                        </select>
+                                    </p>
+                                </div>
+                            </article>
+                            <article>
+                                <article class="p-pager-num">
+                                    <p>
+                                        <span>1~100</span>
+                                        <span>/1000 件</span>
+                                    </p>
+                                    <p>
+                                        <span>10</span>
+                                        <span>件選択しました。</span>
+                                    </p>
+                                </article>
+                                <article>
+                                    <ul class="p-pager">
+                                        <li>
+                                            <button href="http://">«</button>
+                                        </li>
+                                        <li>
+                                            <button href="http://">‹</button>
+                                        </li>
+                                        <li>
+                                            <button href="http://">1</button>
+                                        </li>
+                                        <li>
+                                            <button href="http://">2</button>
+                                        </li>
+                                        <li>
+                                            <button href="http://">3</button>
+                                        </li>
+                                        <li>
+                                            <button href="http://">4</button>
+                                        </li>
+                                        <li>
+                                            <button href="http://">›</button>
+                                        </li>
+                                        <li>
+                                            <button href="http://">»</button>
+                                        </li>
+                                    </ul>
+                                </article>
+                            </article>
+                        </article>
+                        <div class="o-border__bold__sm"></div>
+                        <div class="p-table">
+                            <table id="demoTableA" class="table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:4rem;">
+                                        </th>
+                                        <th>▼集配先コード</th>
+                                        <th>▼社名</th>
+                                        <th>▼部課名</th>
+                                        <th>▼担当者名</th>
+                                        <th>▼住所</th>
+                                        <th>▼TEL</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @*@if (null != Model.WMS_DERIVERY_ADMINs)
+                                    {
+                                        @foreach (var (item, index) in Model.WMS_DERIVERY_ADMINs.ToList().Select((item, index) => (item, index)))
+                                        {
+                                            <tr>
+
+                                                <td style="text-align: center;">
+                                                    <a href="">選択</a>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <!-- 集配先コード -->
+                                                        @item.DEST_CODE
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <!-- 社名 -->
+                                                        @item.COMPANY
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <!-- 部署名 -->
+                                                        @item.DEPARTMENT
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <!-- 担当者名 -->
+                                                        @item.CHARGE_NAME
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <!-- 住所 -->
+                                                        @item.ADDRESS1 @item.ADDRESS2
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <div>
+                                                        <!-- TEL -->
+                                                        @item.TEL
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        }
+                                    }*@
+                                    <!--
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <a href="">選択</a>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+
+    -->
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+            </article>
+        </article>
+    </div>
+
+    <!--Add Noda-->
+</form>
+
+<!-- Del Noda -->
+<!--
+        <a href="#! " class="modal-close">×</a>
+
+    </section>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js"></script>
+    <script src="../js/lib/jquery.cookie.js"></script>
+    <script src="../js/lib/spectrum.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>
+-->
+
+
+<script>
+
+    $(document).ready(function () {
+        //ページを開いたら、ローディング表示を非表示に
+        VegaUtility.StaticFunctions.LoadingSplash.hide();
+    });
+
+    //検索文字列をクリアする
+    function ClearTxtSearchStr() {
+
+//THIS_IS_PENDING
+//ModelへのJavaScriptでのアクセスはこの記述で良いか？
+//より分かりやすい記述はないか？
+        document.FrmSelectDerivery.mSearchStr.value = "";
+
+    }
+
+
+</script>
+

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 66">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #d18022;
+      }
+
+      .cls-2, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        font-size: 10px;
+        font-family: Osaka;
+      }
+    </style>
+  </defs>
+  <g id="シンボル_156_1" data-name="シンボル 156 – 1" transform="translate(-442.196 -346)">
+    <rect id="長方形_370" data-name="長方形 370" class="cls-1" width="66" height="66" transform="translate(442.196 346)"/>
+    <text id="Excel" class="cls-2" transform="translate(473.615 401.1)"><tspan x="-19.883" y="0">確定済み</tspan></text>
+    <g id="チェックマークのアイコン素材_7" data-name="チェックマークのアイコン素材 7" transform="translate(458.196 305.921)">
+      <path id="パス_1760" data-name="パス 1760" class="cls-3" d="M111.069,60.914l-5.313-5.3-3.806,3.618-.463.439h0l0,0,9.59,8.228L130.92,47.837l-1.151-2.022-.175-.31h0l0-.005Z" transform="translate(-93.141 4.357)"/>
+      <path id="パス_1761" data-name="パス 1761" class="cls-3" d="M34.313,64.755v-.01L29.893,69.4v8.923a2.335,2.335,0,0,1-2.265,2.394H6.686A2.335,2.335,0,0,1,4.42,78.327V56.2A2.336,2.336,0,0,1,6.686,53.8H27.627a2.171,2.171,0,0,1,1.381.5l3.2-2.777.24-.208h0l.005,0a6.5,6.5,0,0,0-4.823-2.184H6.686A6.893,6.893,0,0,0,0,56.2V78.327a6.893,6.893,0,0,0,6.686,7.066H27.627a6.893,6.893,0,0,0,6.686-7.066v-8l0-5.577Z" transform="translate(0 -3.315)"/>
+    </g>
+  </g>
+</svg>

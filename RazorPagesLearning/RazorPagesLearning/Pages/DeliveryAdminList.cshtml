@@ -1,0 +1,334 @@
+﻿@page
+@model RazorPagesLearning.Pages.DeliveryAdminListModel
+@{
+    ViewData["Title"] = "DeliveryAdminList";
+}
+
+<!-- DataTablesを読み取るために必要なコンポーネントを取り込み -->
+<partial name="_DataTablesScriptsPartial" />
+
+<div class="p-page-title">
+    荷主メニュー/
+    <span>集配先マスタ一覧</span>
+</div>
+
+<form method="post" style="height:inherit;">
+    <article id="Cargo" class="p-main-wrap__2col">
+        <section>
+            <h1>検索条件</h1>
+            <article>
+                <div class="p-buttom-wrap">
+                    <button type="submit" class="o-button__base" asp-page-handler="list">検索</button>
+                </div>
+                <div class="o-border__bold"></div>
+                <div class="u-wrap-mb">
+                    <div class="p-datachip">
+                        <h1>社名</h1>
+                        <p>
+                            <input asp-for=@Model.viewModel.company maxlength="1024" placeholder="文字1024字"/>
+                            @if (Service.DB.DeliveryAdminService.ReadConfigBase.AndOr.And == Model.viewModel.andOr)
+                            {
+                                <input type="radio" asp-for=@Model.viewModel.andOr value="@Service.DB.DeliveryAdminService.ReadConfigBase.AndOr.And" checked />
+                                <span>AND</span>
+                                <input type="radio" asp-for=@Model.viewModel.andOr value="@Service.DB.DeliveryAdminService.ReadConfigBase.AndOr.Or" />
+                                <span>OR</span>
+                            }
+                            else
+                            {
+                                <input type="radio" asp-for=@Model.viewModel.andOr value="@Service.DB.DeliveryAdminService.ReadConfigBase.AndOr.And" />
+                                <span>AND</span>
+                                <input type="radio" asp-for=@Model.viewModel.andOr value="@Service.DB.DeliveryAdminService.ReadConfigBase.AndOr.Or" checked />
+                                <span>OR</span>
+                            }
+                        </p>
+                    </div>
+                    <div class="p-datachip">
+                        <h1>表示</h1>
+                        <p>
+                            <select asp-for="@Model.viewModel.display" asp-items="Model.viewModel.displays"></select>
+                        </p>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section>
+            <article class="p-scroll__head">
+                <h1>結果一覧</h1>
+                <article>
+
+                    <!-- テーブル操作関数群 -->
+                    <div id="TableOperationFunctions">
+
+                        <!-- ボタン類 -->
+                        <div class="p-buttom-wrap">
+                            <button class="o-button__done" id="dispOnButton">表示ON</button>
+                            <button class="o-button__done" id="dispOffButton">表示OFF</button>
+                            <a asp-page="/DeliveryAdminEdit" data-name="DeliveryAdminEdit" class="o-button__new">新規登録</a>
+                        </div>
+
+                        <div class="o-border__bold"></div>
+
+                        <!-- ページネーション情報の設定 -->
+                        <article class="p-table-sort">
+                            <article class="u-wrap-mr d-flex">
+                                <div class="p-datachip">
+                                    <h1>表示件数 </h1>
+                                    <p>
+                                        <select asp-for=@Model.paginationInfo.displayNumber asp-items="Model.paginationInfo.displayNumbers"
+                                                onchange="submit(this.form)"></select>
+                                    </p>
+                                </div>
+                                <div class="p-datachip">
+                                    <h1>現在のページ</h1>
+                                    <p>
+                                        <input type="checkbox"
+                                               onchange="VegaUtility.StaticFunctions.TableHelper.setThisPageCheckStatus(this)" />
+                                    </p>
+                                </div>
+                                <div class="p-datachip">
+                                    <h1>全てのページ</h1>
+                                    <p>
+                                        <input asp-for=@Model.paginationInfo.checkAllPage
+                                               onchange="submit(this.form)" />
+                                    </p>
+                                </div>
+                            </article>
+                            <article>
+                                <article class="p-pager-num">
+                                    <pagination-show-range info="@Model.paginationInfo"> </pagination-show-range>
+
+                                    <data-table-checked-count checked-count-on-server="@Model.viewModel.checkedCountOnServer">
+                                    </data-table-checked-count>
+                                </article>
+                                <pagination-pager info="@Model.paginationInfo" for="@Model.paginationInfo"> </pagination-pager>
+                            </article>
+                        </article>
+
+                    </div>
+
+                    <div class="o-border__bold__sm"></div>
+                </article>
+            </article>
+            <article class="p-scroll__body">
+                @**
+                 * [tableデザインメモ]
+                 * 1.table要素を囲っているp-tableにおいて、max-widthを指定する事で横スクロールのスクロールバーが表示される。
+                 *   この時、max-width="9999px"に指定しておく事で表示可能な適切なサイズに表示が切り替えられる。
+                 * 2.p-tableの要素でmarginが指定されているが、data tables側のデザインと当たってうまく表示できないため、
+                 *   style="margin:0"で要素を上書きしてしまう。
+                 *@
+                <div class="p-table" max-width="9999px">
+                    <table id="searchTable" class="table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width:3rem;"></th>
+                                <th style="width:4rem;"></th>
+                                <th save-column-width-size-name="SEARCH_DEST_CODE">
+                                    <span onclick="onHeaderClickForSort('DEST_CODE')">
+                                        @Model.viewModel.getTargetSortSign("DEST_CODE")
+                                    </span>
+                                    集配先コード
+                                </th>
+                                <th save-column-width-size-name="SEARCH_COMPANY">
+                                    <span onclick="onHeaderClickForSort('COMPANY')">
+                                        @Model.viewModel.getTargetSortSign("COMPANY")
+                                    </span>
+                                    社名
+                                </th>
+                                <th save-column-width-size-name="SEARCH_DEPARTMENT">
+                                    <span onclick="onHeaderClickForSort('DEPARTMENT')">
+                                        @Model.viewModel.getTargetSortSign("DEPARTMENT")
+                                    </span>
+                                    部署名
+                                </th>
+                                <th save-column-width-size-name="SEARCH_CHARGE_NAME">
+                                    <span onclick="onHeaderClickForSort('CHARGE_NAME')">
+                                        @Model.viewModel.getTargetSortSign("CHARGE_NAME")
+                                    </span>
+                                    担当者名
+                                </th>
+                                <th save-column-width-size-name="SEARCH_ADDRESS">
+                                    <span onclick="onHeaderClickForSort('ADDRESS')">
+                                        @Model.viewModel.getTargetSortSign("ADDRESS")
+                                    </span>
+                                    住所
+                                </th>
+                                <th save-column-width-size-name="SEARCH_TEL">
+                                    <span onclick="onHeaderClickForSort('TEL')">
+                                        @Model.viewModel.getTargetSortSign("TEL")
+                                    </span>
+                                    TEL
+                                </th>
+                                <th save-column-width-size-name="SEARCH_DISPLAY_FLAG">
+                                    <span onclick="onHeaderClickForSort('DISPLAY_FLAG')">
+                                        @Model.viewModel.getTargetSortSign("DISPLAY_FLAG")
+                                    </span>
+                                    表示
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (item, index) in Model.viewModel.tableRows.Select((item, index) => (item, index)))
+                            {
+                                <tr>
+                                    <td style="text-align: center;">
+
+                                        <input type="hidden"
+                                               asp-for=@Model.viewModel.tableRows[index].trackingIdentifier.dataId
+                                               value=@Model.viewModel.tableRows[index].trackingIdentifier.dataId />
+
+                                        @*******************************************************
+                                         * check boxの定義
+                                         *   htmlデフォルトのcheckboxではクリック状態に応じて、
+                                         *   checked属性が変化するだけでvalueの値は変化しない。
+                                         *   本実装では、
+                                         *   VegaUtility.StaticFunctions.ASPHelper.registerEvent_SynchronizeTheCheckboxValue関数で
+                                         *   登録したイベントを経由して、
+                                         *   hidden列の値を更新する事で更新処理を対応させる。
+                                         *   サーバー側にはhidden列で登録した値を対応させる。
+                                         *@
+                                        <input id=@($"checkbox_isSelected{Model.viewModel.tableRows[index].trackingIdentifier.dataId}")
+                                               type="checkbox"
+                                               @if (true == Model.viewModel.tableRows[index].isSelected) { @: checked="checked"
+                                               }
+                                               name=@($"viewModel.tableRows[{index}].isSelected_dummy")
+                                               value=@(Model.viewModel.tableRows[index].isSelected.ToString().ToLower())
+                                               data-val-required="The isSelected field is required."
+                                               data-val=@(Model.viewModel.tableRows[index].isSelected.ToString().ToLower()) />
+
+                                        <input type="hidden"
+                                               id=@($"hidden-checkbox_isSelected{Model.viewModel.tableRows[index].trackingIdentifier.dataId}")
+                                               name=@($"viewModel.tableRows[{index}].isSelected")
+                                               value=@(Model.viewModel.tableRows[index].isSelected.ToString().ToLower()) />
+                                        @******************************************************@
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <a asp-page="/DeliveryAdminEdit" asp-route-id="@item.data.DELIVERY_ADMIN_ID">照会</a>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(e => item.data.DELIVERY_CODE)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(e => item.data.COMPANY)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(e => item.data.DEPARTMENT)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(e => item.data.CHARGE_NAME)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(e => item.data.ADDRESS1)
+                                        @Html.DisplayFor(e => item.data.ADDRESS2)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(e => item.data.TEL)
+                                    </td>
+                                    <td>
+                                        @if (item.data.DISPLAY_FLAG)
+                                        {
+                                            @:ON
+                                        }
+                                        else
+                                        {
+                                            @:OFF
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+    </article>
+</form>
+
+<script>
+    $(function () {
+        //ページを開いたら、ローディング表示を非表示に
+        VegaUtility.StaticFunctions.LoadingSplash.hide();
+
+        //チェックボックスのクリック時にチェック状態と
+        //要素のvalueの状態を同期させる
+        //これを入れないと、ASPで要素の選択状態を切り替えた後にpostした時に、
+        //正しくpostされるデータにチェック状態が反映されない。
+        VegaUtility.StaticFunctions.ASPHelper.registerEvent_SynchronizeTheCheckboxValue();
+
+        //テーブルをセットアップする
+        VegaUtility.StaticFunctions.TableHelper.setupTable(
+            {
+                //テーブル要素のID
+                tableElementID: "#searchTable",
+                //テーブル共通機能領域のサイズ(縦領域算出用)
+                tableCommonFunctionElementID: "#TableOperationFunctions",
+                //列左端　スクロール固定列数
+                leftScrollFixedColumns: 2,
+                //列のデフォルトカラムサイズ(省略可)
+                columnSize: [
+                    { width: '1rem', targets: 0 },
+                    { width: '2rem', targets: 1 }
+                ]
+            }
+        );
+    });
+
+    ///ソート用にヘッダをクリックした時の動作
+    var onHeaderClickForSort = function (columnName) {
+
+        VegaUtility.StaticFunctions.TableHelper.onTableHeaderClickForSort(
+            {
+                //ソート対象となる列名はhiddenフィールドに入れてサーバサイドに送り、
+                //サーバー側で処理させる。
+                //ソート対象の列名が入るinput要素名
+                sortOrderName: "#viewModel_sortColumn",
+                //ソートの方向 : ASC or DES
+                sortOrder: "#viewModel_sortDirection",
+                //post対象となるフォーム名
+                formName: "form",
+                //ソートするカラム名
+                columnName: columnName
+            });
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // 表示ONボタン押下
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    let dispOn = $('#dispOnButton').click(function () {
+        let title = '表示切り替え';
+        let content = '選択した集配先を表示ONにしますか？';
+        let handler = 'dispon';
+        confirmOkCancel(title, content, handler);
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // 表示OFFボタン押下
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    let dispOff = $('#dispOffButton').click(function () {
+        let title = '表示切り替え';
+        let content = '選択した集配先を表示OFFにしますか？';
+        let handler = 'dispoff';
+        confirmOkCancel(title, content, handler);
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // 確認ダイアログ表示してアクション実行
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    let confirmOkCancel = function (title, content, handler) {
+        $.confirm({
+            title: title,
+            content: content,
+            buttons: {
+                'OK': function () {
+                    let form = $('form');
+                    form.attr('action', '?handler=' + handler);
+                    form.submit();
+                },
+                'キャンセル': function () {
+                }
+            },
+
+        });
+    };
+
+</script>
