@@ -1,3 +1,0 @@
-git flow 
-release
-hotfix
