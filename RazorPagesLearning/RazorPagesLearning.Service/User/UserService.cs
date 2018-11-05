@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
-using RazorPagesLearning.Data;
-using RazorPagesLearning.Data.Models;
-using RazorPagesLearning.Service.DB;
-using RazorPagesLearning.Service.DB.Helper;
-using RazorPagesLearning.Service.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using RazorPagesLearning.Data.Models;
+using RazorPagesLearning.Service.DB;
+using RazorPagesLearning.Service.DB.Helper;
+using RazorPagesLearningL.Service.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using RazorPagesLearningL.Service.Utility;
 
 namespace RazorPagesLearning.Service.User
 {
@@ -25,35 +23,24 @@ namespace RazorPagesLearning.Service.User
     /// 別々で処理すると、煩雑であるため、関連処理はこのクラスにまとめる。
     /// 
     /// </summary>
-    public class UserService : DB.DBServiceBase
+    public class UserService : DBServiceBase
     {
 
         /// <summary>
         /// セキュリティポリシーアクセスサービス
         /// </summary>
-        private readonly RazorPagesLearning.Service.DB.PolicyService policyService;
+        private readonly PolicyService policyService;
 
-        /*
-        private readonly RazorPagesLearning.Data.RazorPagesLearningContext db;
-        private readonly ClaimsPrincipal user;
-        private readonly SignInManager<IdentityUser> signInManager;
-        private readonly UserManager<IdentityUser> userManager;
-        */
         public UserService(
-            RazorPagesLearning.Data.RazorPagesLearningContext ref_db,
+            Data.RazorPagesLearningContext ref_db,
             ClaimsPrincipal ref_user,
             SignInManager<IdentityUser> ref_signInManager,
                 UserManager<IdentityUser> ref_userManager)
             : base(ref_db, ref_user, ref_signInManager, ref_userManager)
         {
+            db = ref_db;
 
-            this.db = ref_db;
-            /*
-            this.user = ref_user;
-            this.signInManager = ref_signInManager;
-            this.userManager = ref_userManager;*/
-
-            this.policyService = new DB.PolicyService(
+            policyService = new PolicyService(
                 ref_db,
                 ref_user,
                 ref_signInManager,
@@ -68,19 +55,19 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// 管理対象テーブル
             /// </summary>
-            public RazorPagesLearning.Data.Models.USER_ACCOUNT USER_ACCOUNT;
+            public USER_ACCOUNT USER_ACCOUNT;
 
             #region 権限が荷主の場合における必須事項
 
             /// <summary>
             /// デフォルトのユーザー部課コード
             /// </summary>
-            public RazorPagesLearning.Data.Models.USER_DEPARTMENT DEFAULT_USER_DEPARTMENT;
+            public USER_DEPARTMENT DEFAULT_USER_DEPARTMENT;
 
             /// <summary>
             /// ユーザーが所属するユーザー部課コード
             /// </summary>
-            public List<RazorPagesLearning.Data.Models.USER_DEPARTMENT> belongsUSER_DEPARTMENT;
+            public List<USER_DEPARTMENT> belongsUSER_DEPARTMENT;
 
             #endregion
 
@@ -101,12 +88,12 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// 登録ユーザーアカウントID
             /// </summary>
-            public Int64 createdUserAccountId { get; set; }
+            public long CreatedUserAccountId { get; set; }
 
             /// <summary>
             /// 更新ユーザーアカウントID
             /// </summary>
-            public Int64 updatedUserAccountId { get; set; }
+            public long UpdatedUserAccountId { get; set; }
 
         }
 
@@ -197,12 +184,12 @@ namespace RazorPagesLearning.Service.User
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public async Task<Result.DefaultExecutionResult> add(ChangeConfig arg)
+        public async Task<Result.DefaultExecutionResult> Add(ChangeConfig arg)
         {
             #region ローカル関数
 
             //ユーザーアカウント情報を登録
-            async Task<RazorPagesLearning.Data.Models.USER_ACCOUNT> LF_addUSERACCOUNT()
+            async Task<USER_ACCOUNT> LF_addUSERACCOUNT()
             {
 
                 {
@@ -234,7 +221,7 @@ namespace RazorPagesLearning.Service.User
                     //新規のパスワード桁数
                     {
                         #region パスワード桁数の確認
-                        var d = this.policyService.read(new DB.PolicyService.ReadConfig
+                        var d = policyService.read(new DB.PolicyService.ReadConfig
                         {
                             NAME = POLICY.PASSWORD_POLICY.Digit
                         });
@@ -291,12 +278,12 @@ namespace RazorPagesLearning.Service.User
                         }
 
                         arg.USER_ACCOUNT.PASSWORD_HISTORYs.Add(
-                            new RazorPagesLearning.Data.Models.PASSWORD_HISTORY
+                            new PASSWORD_HISTORY
                             {
                                 PASSWORD = arg.USER_ACCOUNT.PASSWORD,
                                 PASSWORD_SALT = arg.USER_ACCOUNT.PASSWORD_SALT,
-                                CREATED_USER_ACCOUNT_ID = arg.createdUserAccountId,
-                                UPDATED_USER_ACCOUNT_ID = arg.updatedUserAccountId
+                                CREATED_USER_ACCOUNT_ID = arg.CreatedUserAccountId,
+                                UPDATED_USER_ACCOUNT_ID = arg.UpdatedUserAccountId
                             });
                     }
 
@@ -307,8 +294,8 @@ namespace RazorPagesLearning.Service.User
                 {
                     #region 更新登録者情報を追加する
 
-                    arg.USER_ACCOUNT.CREATED_USER_ACCOUNT_ID = arg.createdUserAccountId;
-                    arg.USER_ACCOUNT.UPDATED_USER_ACCOUNT_ID = arg.updatedUserAccountId;
+                    arg.USER_ACCOUNT.CREATED_USER_ACCOUNT_ID = arg.CreatedUserAccountId;
+                    arg.USER_ACCOUNT.UPDATED_USER_ACCOUNT_ID = arg.UpdatedUserAccountId;
 
                     #endregion
                 }
@@ -336,7 +323,7 @@ namespace RazorPagesLearning.Service.User
 
 
                            //関係する部課マスタを関連付けする
-                           var departmentAdminService = new DB.DepartmentAdminService(
+                           var departmentAdminService = new DepartmentAdminService(
                               db,
                               user,
                               signInManager,
@@ -355,7 +342,7 @@ namespace RazorPagesLearning.Service.User
 
                                //関係する部課情報を取得
                                var daq = departmentAdminService.read(
-                                  new DB.DepartmentAdminService.ReadConfig
+                                  new DepartmentAdminService.ReadConfig
                                   {
                                       DEPARTMENT_CODE = e.DEPARTMENT_CODE,
                                       SHIPPER_CODE = e.SHIPPER_CODE
@@ -377,7 +364,7 @@ namespace RazorPagesLearning.Service.User
 
                         //DBに登録する
                         {
-                            var userDepartmentService = new DB.UserDepartmentService(
+                            var userDepartmentService = new UserDepartmentService(
                                 db,
                                 user,
                                 signInManager,
@@ -408,7 +395,7 @@ namespace RazorPagesLearning.Service.User
                             throw new ApplicationException(errMsg);
                         }
 
-                        var transportAdminService = new DB.TransportAdminService(
+                        var transportAdminService = new TransportAdminService(
                             db,
                             user,
                             signInManager,
@@ -434,11 +421,11 @@ namespace RazorPagesLearning.Service.User
 					#region 権限に関わらず必要な情報の追加処理
 
 					// ユーザー検索条件を追加する
-					var searchConditionService = new DB.SearchConditionService(db, user, signInManager, userManager);
+					var searchConditionService = new SearchConditionService(db, user, signInManager, userManager);
 					await searchConditionService.Add(arg.USER_ACCOUNT.ID);
 
 					// ユーザー表示設定を追加する
-					var displaySettingService = new DB.DisplaySettingService(db, user, signInManager, userManager);
+					var displaySettingService = new DisplaySettingService(db, user, signInManager, userManager);
 					await displaySettingService.add(arg.USER_ACCOUNT.ID);
 
 					// まとめて保存
@@ -451,8 +438,7 @@ namespace RazorPagesLearning.Service.User
             };
 
             //Identity側の情報を登録する
-            async Task<Result.DefaultExecutionResult> LF_addIdentityTask
-                (RazorPagesLearning.Data.Models.USER_ACCOUNT userAccount)
+            async Task<Result.DefaultExecutionResult> LF_addIdentityTask(USER_ACCOUNT userAccount)
             {
                 var str_ID = userAccount.ID.ToString();
                 {
@@ -531,7 +517,7 @@ namespace RazorPagesLearning.Service.User
                     var ret = await LF_addIdentityTask(uid);
                     if (false == ret.succeed)
                     {
-                        throw new ApplicationException(String.Join(",", ret.errorMessages.ToString()));
+                        throw new ApplicationException(string.Join(",", ret.errorMessages.ToString()));
                     }
 
                     //DB保存する
@@ -585,8 +571,8 @@ namespace RazorPagesLearning.Service.User
             public UpdateHelper(UserService ref_userService,
                 UpdateConfig ref_config)
             {
-                this.userService = ref_userService;
-                this.config = ref_config;
+                userService = ref_userService;
+                config = ref_config;
             }
 
             #region メンバー変数
@@ -608,7 +594,7 @@ namespace RazorPagesLearning.Service.User
             /// </summary>
             private USER_ACCOUNT readUserWithCheck()
             {
-                var dbu = this.userService.read(
+                var dbu = userService.read(
                     config.USER_ACCOUNT.ID
                     );
                 if (null == dbu)
@@ -912,7 +898,7 @@ namespace RazorPagesLearning.Service.User
                     //入力されたパスワード文字列をhash形式に変換
                     var hashedPassword =
                         HelperFunctions.toHashString(config.password,
-                        this.userService.db.USER_ACCOUNTs
+                        userService.db.USER_ACCOUNTs
                         .Where(e => e.ID == config.USER_ACCOUNT.ID)
                         .First().PASSWORD_SALT);
 
@@ -978,7 +964,7 @@ namespace RazorPagesLearning.Service.User
 
                                     //関係する部課情報を取得
                                     var daq = departmentAdminService.read(
-                                            new DB.DepartmentAdminService.ReadConfig
+                                            new DepartmentAdminService.ReadConfig
                                             {
                                                 DEPARTMENT_CODE = e.DEPARTMENT_CODE,
                                                 SHIPPER_CODE = e.SHIPPER_CODE
@@ -1049,7 +1035,7 @@ namespace RazorPagesLearning.Service.User
                                 throw new ApplicationException(errMsg);
                             }
 
-                            var transportAdminService = new DB.TransportAdminService(
+                            var transportAdminService = new TransportAdminService(
                                 userService.db,
                                 userService.user,
                                 userService.signInManager,
@@ -1081,7 +1067,7 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// 変更検知
             /// </summary>
-            public void collisionDetection()
+            public void CollisionDetection()
             {
                 var user = readUserWithCheck();
                 if (config.collisionDetectionTimestamp != user.timestampToString())
@@ -1138,7 +1124,7 @@ namespace RazorPagesLearning.Service.User
         /// <returns></returns>
         public async Task<Result.ExecutionResult<UpdateOperationType>> update(UpdateConfig arg)
         {
-            return await RazorPagesLearning.Service.DB.Helper.ServiceHelper
+            return await ServiceHelper
                 .doOperationWithErrorManagementAsync<UpdateOperationType>(async (ret) =>
           {
               using (var transaction = db.Database.BeginTransaction())
@@ -1148,7 +1134,7 @@ namespace RazorPagesLearning.Service.User
                   UpdateOperationType typeOperation = UpdateOperationType.ImmediateChange;
 
                   //更新衝突検知
-                  helper.collisionDetection();
+                  helper.CollisionDetection();
 
                   //1. 即時反映系の反映を行う
                   #region 即時反映が必要な処理を適応する
@@ -1204,7 +1190,7 @@ namespace RazorPagesLearning.Service.User
             public ReflectPendingChangesHelper(UserService ref_userService,
                 string targetUSER_ID)
             {
-                this.userService = ref_userService;
+                userService = ref_userService;
                 this.targetUSER_ID = targetUSER_ID;
             }
 
@@ -1241,7 +1227,7 @@ namespace RazorPagesLearning.Service.User
                     if (false == r.Succeeded)
                     {
                         throw new ApplicationException(
-                            String.Join("<br>",
+                            string.Join("<br>",
                             r.Errors.Select(e => $"Identity:権限消去に失敗 {e.Code} : {e.Description}")));
                     }
                 }
@@ -1252,7 +1238,7 @@ namespace RazorPagesLearning.Service.User
                     if (false == r.Succeeded)
                     {
                         throw new ApplicationException(
-                            String.Join("<br>",
+                            string.Join("<br>",
                             r.Errors.Select(e => $"Identity:権限追加に失敗 {e.Code} : {e.Description}")));
                     }
                 }
@@ -1268,7 +1254,7 @@ namespace RazorPagesLearning.Service.User
             public Tuple<bool, USER_ACCOUNT> isOperationRequired()
             {
                 //ユーザー名が変更されていない場合、現在のユーザー名で取得する
-                var userNow = this.userService.read(targetUSER_ID);
+                var userNow = userService.read(targetUSER_ID);
                 if (null != userNow)
                 {
                     if (null != userNow.WK_USER_ACCOUNT)
@@ -1283,11 +1269,11 @@ namespace RazorPagesLearning.Service.User
                 else
                 {
                     //更新後のユーザーIDを
-                    var userNew = this.userService.db
+                    var userNew = userService.db
                         .WK_USER_ACCOUNTs.Where(e => e.USER_ID == targetUSER_ID).FirstOrDefault();
                     if (null != userNew)
                     {
-                        var tu = this.userService.db
+                        var tu = userService.db
                             .USER_ACCOUNTs.Where(e => e.ID == userNew.USER_ACCOUNT_ID).FirstOrDefault();
                         if (null == tu)
                         {
@@ -1312,7 +1298,7 @@ namespace RazorPagesLearning.Service.User
                 //ユーザーIDはシステム内部でユニークであるため、
                 //IDチェックを行う
                 {
-                    var overlap = this.userService.db
+                    var overlap = userService.db
                         .USER_ACCOUNTs.Where(e => e.USER_ID == target.USER_ID)
                         .Where(e => e.ID != target.WK_USER_ACCOUNT.USER_ACCOUNT_ID)
                         ;
@@ -1349,7 +1335,7 @@ namespace RazorPagesLearning.Service.User
                 async Task<bool> LF_ReflectShipper()
                 {
                     //関係する部課マスタを関連付けする
-                    var departmentAdminService = new DB.DepartmentAdminService(
+                    var departmentAdminService = new DepartmentAdminService(
                        userService.db,
                        userService.user,
                        userService.signInManager,
@@ -1374,7 +1360,7 @@ namespace RazorPagesLearning.Service.User
                             //部課情報の指定が有ったら適応する
                             foreach (var ele in twk_user.USER_DEPARTMENTs)
                             {
-                                var r = departmentAdminService.read(new DB.DepartmentAdminService.ReadConfig
+                                var r = departmentAdminService.read(new DepartmentAdminService.ReadConfig
                                 {
                                     DEPARTMENT_CODE = ele.DEPARTMENT_CODE,
                                     SHIPPER_CODE = ele.SHIPPER_CODE
@@ -1429,7 +1415,7 @@ namespace RazorPagesLearning.Service.User
 
                             foreach (var ele in target.USER_DEPARTMENTs)
                             {
-                                var r = departmentAdminService.read(new DB.DepartmentAdminService.ReadConfig
+                                var r = departmentAdminService.read(new DepartmentAdminService.ReadConfig
                                 {
                                     DEPARTMENT_CODE = ele.DEPARTMENT_CODE,
                                     SHIPPER_CODE = ele.SHIPPER_CODE
@@ -1460,7 +1446,7 @@ namespace RazorPagesLearning.Service.User
                 //運送会社情報を適応
                 async Task<bool> LF_ReflectShippingCompany()
                 {
-                    var transportAdminService = new DB.TransportAdminService(
+                    var transportAdminService = new TransportAdminService(
                         userService.db,
                         userService.user,
                         userService.signInManager,
@@ -1476,13 +1462,9 @@ namespace RazorPagesLearning.Service.User
                                 //運送会社情報の指定が来ていたら更新する
                                 var t = transportAdminService.read(twk_user.TRANSPORT_ADMIN_CODE)
                                     .FirstOrDefault();
-                                if (null == t)
-                                {
-                                    throw new ApplicationException("DB上に存在しない運送会社コードが指定されています。");
-                                }
 
                                 //情報を反映させる
-                                target.TRANSPORT_ADMIN = t;
+                                target.TRANSPORT_ADMIN = t ?? throw new ApplicationException("DB上に存在しない運送会社コードが指定されています。");
                                 target.TRANSPORT_ADMIN_CODE = t.CODE;
                                 await userService.db.SaveChangesAsync();
                             }
@@ -1597,7 +1579,7 @@ namespace RazorPagesLearning.Service.User
         {
             targetUSER_ID = targetUSER_ID.Trim();
 
-            return await RazorPagesLearning.Service.DB.Helper.ServiceHelper
+            return await ServiceHelper
                 .doOperationWithErrorManagementAsync<bool>(async (ret) =>
                 {
                     //操作補助クラスを生成する
@@ -1639,7 +1621,7 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// 管理対象テーブル
             /// </summary>
-            public RazorPagesLearning.Data.Models.USER_ACCOUNT USER_ACCOUNT;
+            public USER_ACCOUNT USER_ACCOUNT;
 
             /// <summary>
             /// 更新パスワード
@@ -1665,7 +1647,7 @@ namespace RazorPagesLearning.Service.User
             //新規のパスワード桁数
             {
                 #region パスワード桁数の確認
-                var d = this.policyService.read(new DB.PolicyService.ReadConfig
+                var d = this.policyService.read(new PolicyService.ReadConfig
                 {
                     NAME = POLICY.PASSWORD_POLICY.Digit
                 });
@@ -1679,7 +1661,7 @@ namespace RazorPagesLearning.Service.User
             //パスワードの再利用禁止履歴数の確認
             {
                 #region パスワード再利用禁止履歴の確認
-                var d = this.policyService.read(new DB.PolicyService.ReadConfig
+                var d = this.policyService.read(new PolicyService.ReadConfig
                 {
                     NAME = POLICY.PASSWORD_POLICY.Reuse
                 });
@@ -1723,12 +1705,12 @@ namespace RazorPagesLearning.Service.User
                 {
                     PASSWORD = ref_hashedPassword
                 };
-                await this.setBothManagementInformation(td);
+                await setBothManagementInformation(td);
                 config.USER_ACCOUNT.PASSWORD_HISTORYs.Add(td);
 
                 //指定数以上の履歴が有ったら消去する
                 {
-                    var d = this.policyService.read(new DB.PolicyService.ReadConfig
+                    var d = policyService.read(new PolicyService.ReadConfig
                     {
                         NAME = POLICY.PASSWORD_POLICY.Reuse
                     });
@@ -1758,7 +1740,7 @@ namespace RazorPagesLearning.Service.User
             {
                 if (ref_hashedNowPassword != config.USER_ACCOUNT.PASSWORD)
                 {
-                    return Tuple.Create<bool, string>(false,
+                    return Tuple.Create(false,
                             "指定された現在のパスワードが一致しません。");
                 }
 
@@ -1879,7 +1861,7 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// ユーザーIDをand条件で結合するか
             /// </summary>
-            public bool isAnd_USER_ID { get; set; }
+            public bool IsAnd_USER_ID { get; set; }
 
             /// <summary>
             /// ユーザー名称(カナ)
@@ -1889,7 +1871,7 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// ユーザー名称(カナ)をand条件で結合するか
             /// </summary>
-            public bool isAnd_USER_NAME_KANA { get; set; }
+            public bool IsAnd_USER_NAME_KANA { get; set; }
 
             /// <summary>
             /// 会社名
@@ -1899,7 +1881,7 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// 会社名をand条件で結合するか
             /// </summary>
-            public bool isAnd_COMPANY { get; set; }
+            public bool IsAnd_COMPANY { get; set; }
 
             /// <summary>
             /// 荷主コード
@@ -1909,7 +1891,7 @@ namespace RazorPagesLearning.Service.User
             /// <summary>
             /// アカウント権限
             /// </summary>
-            public Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION PERMISSION { get; set; }
+            public USER_ACCOUNT.ACCOUNT_PERMISSION PERMISSION { get; set; }
 
         }
 
@@ -1918,7 +1900,7 @@ namespace RazorPagesLearning.Service.User
         /// 遅延反映する情報を合わせて持っている。
         /// このクラスでは、透過的に必要な情報にアクセスできるようにする。
         /// </summary>
-        public class HoldsPendingInformation_USER_ACCOUNT : RazorPagesLearning.Data.Models.USER_ACCOUNT
+        public class HoldsPendingInformation_USER_ACCOUNT : USER_ACCOUNT
         {
 
             public UserService userService;
@@ -1930,9 +1912,9 @@ namespace RazorPagesLearning.Service.User
             {
                 get
                 {
-                    if (null != this.WK_USER_ACCOUNT)
+                    if (null != WK_USER_ACCOUNT)
                     {
-                        return this.WK_USER_ACCOUNT.USER_ID;
+                        return WK_USER_ACCOUNT.USER_ID;
                     }
                     else
                     {
@@ -1941,9 +1923,9 @@ namespace RazorPagesLearning.Service.User
                 }
                 set
                 {
-                    if (null != this.WK_USER_ACCOUNT)
+                    if (null != WK_USER_ACCOUNT)
                     {
-                        this.WK_USER_ACCOUNT.USER_ID = value;
+                        WK_USER_ACCOUNT.USER_ID = value;
                     }
                     else
                     {
@@ -1956,9 +1938,9 @@ namespace RazorPagesLearning.Service.User
             {
                 get
                 {
-                    if (null != this.WK_USER_ACCOUNT)
+                    if (null != WK_USER_ACCOUNT)
                     {
-                        return this.WK_USER_ACCOUNT.NAME;
+                        return WK_USER_ACCOUNT.NAME;
                     }
                     else
                     {
@@ -1967,9 +1949,9 @@ namespace RazorPagesLearning.Service.User
                 }
                 set
                 {
-                    if (null != this.WK_USER_ACCOUNT)
+                    if (null != WK_USER_ACCOUNT)
                     {
-                        this.WK_USER_ACCOUNT.NAME = value;
+                        WK_USER_ACCOUNT.NAME = value;
                     }
                     else
                     {
@@ -2278,7 +2260,7 @@ namespace RazorPagesLearning.Service.User
                         var keys = config.USER_ID.Split(delimiterChars);
                         if (0 != keys.Length)
                         {
-                            if (true == config.isAnd_USER_ID)
+                            if (true == config.IsAnd_USER_ID)
                             {
                                 foreach (var k in keys)
                                 {
@@ -2305,7 +2287,7 @@ namespace RazorPagesLearning.Service.User
                         var keys = config.USER_NAME_KANA.Split(delimiterChars);
                         if (0 != keys.Length)
                         {
-                            if (true == config.isAnd_USER_NAME_KANA)
+                            if (true == config.IsAnd_USER_NAME_KANA)
                             {
                                 foreach (var k in keys)
                                 {
@@ -2470,7 +2452,7 @@ namespace RazorPagesLearning.Service.User
                         var keys = config.USER_ID.Split(delimiterChars);
                         if (0 != keys.Length)
                         {
-                            if (true == config.isAnd_USER_ID)
+                            if (true == config.IsAnd_USER_ID)
                             {
                                 foreach (var k in keys)
                                 {
@@ -2497,7 +2479,7 @@ namespace RazorPagesLearning.Service.User
                         var keys = config.USER_NAME_KANA.Split(delimiterChars);
                         if (0 != keys.Length)
                         {
-                            if (true == config.isAnd_USER_NAME_KANA)
+                            if (true == config.IsAnd_USER_NAME_KANA)
                             {
                                 foreach (var k in keys)
                                 {
@@ -2524,7 +2506,7 @@ namespace RazorPagesLearning.Service.User
                         var keys = config.COMPANY.Split(delimiterChars);
                         if (0 != keys.Length)
                         {
-                            if (true == config.isAnd_COMPANY)
+                            if (true == config.IsAnd_COMPANY)
                             {
                                 foreach (var k in keys)
                                 {

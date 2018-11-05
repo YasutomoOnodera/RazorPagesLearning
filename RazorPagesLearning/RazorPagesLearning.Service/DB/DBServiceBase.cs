@@ -1,10 +1,8 @@
-﻿using RazorPagesLearning.Data.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using RazorPagesLearning.Data.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using static RazorPagesLearning.Service.User.UserService;
 
@@ -104,7 +102,7 @@ namespace RazorPagesLearning.Service.DB
                 if (null != this.db &&
                     null != this.user &&
                     null != this.signInManager &&
-                    null != this.userManager)
+                    null != userManager)
                 {
                     if (null == _userServiceCache)
                     {

@@ -241,7 +241,7 @@ namespace RazorPagesLearning.Pages
                     {
                         USER_ACCOUNT = loggedUser,
                         updateRange = Service.User.UserService.UpdateConfig.UpdateRange.ALL,
-                        updatedUserAccountId = loggedUser.ID,
+                        UpdatedUserAccountId = loggedUser.ID,
                         collisionDetectionTimestamp = loggedUser.timestampToString(),
                         isPasswordUpdateRequired = true,
                         password = this.viewModel.newPassword

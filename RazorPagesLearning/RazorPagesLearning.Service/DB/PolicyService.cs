@@ -1,14 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using RazorPagesLearning.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.Security.Claims;
-using RazorPagesLearning.Data.Models;
-using Microsoft.AspNetCore.Identity;
-using RazorPagesLearning.Service.DB;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace RazorPagesLearning.Service.DB
 {
@@ -29,7 +24,6 @@ namespace RazorPagesLearning.Service.DB
                 UserManager<IdentityUser> ref_userManager)
             : base(ref_db, ref_user, ref_signInManager, ref_userManager)
         {
-
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////

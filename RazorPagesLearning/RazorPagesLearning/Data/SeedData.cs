@@ -12,65 +12,64 @@ namespace RazorPagesLearning.Data
     {
 
         /// <summary>
-        /// 処理権限を初期化する
+        /// ロール処理権限を初期化する
         /// </summary>
         /// <param name="serviceProvider"></param>
         /// <returns></returns>
-        public static async Task<bool> initUserRoles(IServiceProvider serviceProvider)
+        public static async Task<bool> InitUserRoles(IServiceProvider serviceProvider)
         {
-            Func<string, RoleManager<IdentityRole>, Task<bool>> make = async (name, roleManager) =>
-             {
-                 var roleCheck = await roleManager.RoleExistsAsync(name);
-                 if (!roleCheck)
-                 {
-                     //create the roles and seed them to the database
-                     var roleResult = await roleManager.CreateAsync(new IdentityRole(name));
-                     if (false == roleResult.Succeeded)
-                     {
-                         throw new ApplicationException($"ユーザー権限(name)の追加に失敗しました。");
-                     }
-                 }
-                 return true;
-             };
+            async Task<bool> make(string name, RoleManager<IdentityRole> roleManager)
+            {
+                var roleCheck = await roleManager.RoleExistsAsync(name);
+                if (!roleCheck)
+                {
+                    var roleResult = await roleManager.CreateAsync(new IdentityRole(name));
+                    if (false == roleResult.Succeeded)
+                    {
+                        throw new ApplicationException($"ユーザー権限(name)の追加に失敗しました。");
+                    }
+                }
+                return true;
+            }
 
             //権限を生成する
             var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             //管理者
             await make(USER_ACCOUNT.ACCOUNT_PERMISSION.Admin.ToString(), RoleManager);
-            //荷主　閲覧
-            await make(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperBrowsing.ToString(), RoleManager);
-            //荷主 編集
-            await make(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperEditing.ToString(), RoleManager);
+            //荷主閲覧
+            await make(USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperBrowsing.ToString(), RoleManager);
+            //荷主編集
+            await make(USER_ACCOUNT.ACCOUNT_PERMISSION.ShipperEditing.ToString(), RoleManager);
             //運送会社
-            await make(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.ShippingCompany.ToString(), RoleManager);
+            await make(USER_ACCOUNT.ACCOUNT_PERMISSION.ShippingCompany.ToString(), RoleManager);
             //作業者
-            await make(RazorPagesLearning.Data.Models.USER_ACCOUNT.ACCOUNT_PERMISSION.Worker.ToString(), RoleManager);
+            await make(USER_ACCOUNT.ACCOUNT_PERMISSION.Worker.ToString(), RoleManager);
 
             return true;
 
         }
+
         /// <summary>
         /// 管理者ユーザーを追加する
         /// </summary>
         /// <param name="serviceProvider"></param>
-        public static async Task<bool> initAdminUser(IServiceProvider serviceProvider)
+        public static async Task<bool> InitAdminUser(IServiceProvider serviceProvider)
         {
             var adminId = 0;
-            var adminName = "MWLSystemAdmin";
-            var adminPass = "MWLSystemAdmin2018";
+            var adminName = "RWLSystemAdmin";
+            var adminPass = "RWLSystemAdmin2018";
 
             //認証機構を取得する
             var user = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-            var userService = new RazorPagesLearning.Service.User.UserService
-                (serviceProvider.GetRequiredService<RazorPagesLearningContext>(), null, null,
-               user);
+            var userService = new Service.User.UserService
+                (serviceProvider.GetRequiredService<RazorPagesLearningContext>(), null, null, user);
 
             var f = userService.read(adminName);
             if (null == f)
             {
                 //サービスを使ってユーザーを追加する
-                var r = await userService.add(
+                var r = await userService.Add(
                 new Service.User.UserService.ChangeConfig
                 {
                     password = adminPass,
@@ -79,17 +78,17 @@ namespace RazorPagesLearning.Data
                         USER_ID = adminName,
                         NAME = adminName,
                         KANA = adminName,
-                        COMPANY = "三井物産グローバルロジスティクス株式会社",
-                        ADDRESS1 = "東京都港区東新橋2-14-1",
-                        ZIPCODE = "1050021",
-                        TEL = "0356571130",
-                        FAX = "0356571130",
+                        COMPANY = "RazorPagesLearning株式会社",
+                        ADDRESS1 = "岩手県奥州市胆沢南都田字○○○9-9-9",
+                        ZIPCODE = "0230401",
+                        TEL = "9999999999",
+                        FAX = "9999999999",
                         MAIL = "hoge@test.com",
                         PERMISSION = USER_ACCOUNT.ACCOUNT_PERMISSION.Admin,
                         LOGIN_ENABLE_FLAG = true
                     },
-                    createdUserAccountId = adminId,
-                    updatedUserAccountId = adminId
+                    CreatedUserAccountId = adminId,
+                    UpdatedUserAccountId = adminId
                 });
                 if (false == r.succeed)
                 {
@@ -106,7 +105,7 @@ namespace RazorPagesLearning.Data
         /// </summary>
         /// <param name="serviceProvider"></param>
         /// <returns></returns>
-        public static void initPOLICY(IServiceProvider serviceProvider)
+        public static void InitPOLICY(IServiceProvider serviceProvider)
         {
             //登録用データ
             var vals = new List<POLICY> {
@@ -155,7 +154,7 @@ namespace RazorPagesLearning.Data
         /// ドメインデータを初期化する
         /// </summary>
         /// <param name="serviceProvider"></param>
-        public static void initDOMAINData(IServiceProvider serviceProvider)
+        public static void InitDOMAINData(IServiceProvider serviceProvider)
         {
             var vals = new List<DOMAIN> {
                 //ドメイン(DOMAIN).xlsxの「C#DB定義」列から値をコピーして貼り付ける
@@ -277,7 +276,7 @@ namespace RazorPagesLearning.Data
         /// システム設定を追加する
         /// </summary>
         /// <param name="serviceProvider"></param>
-        public static void initSystemSetting(IServiceProvider serviceProvider)
+        public static void InitSystemSetting(IServiceProvider serviceProvider)
         {
             //システム設定を追加
             var db = serviceProvider.GetRequiredService<RazorPagesLearningContext>();
@@ -307,7 +306,7 @@ namespace RazorPagesLearning.Data
 @Model.userAccount.DEPARTMENT
 @Model.userAccount.NAME  様
 
-この度は TRINET WEB LIBRARY をご利用いただき、誠にありがとう御座います。
+この度は RazorPagesLearning Web Library をご利用いただき、誠にありがとう御座います。
 下記の通り、ご依頼を承りましたのでお知らせいたします。
 ※当メールは送信専用メールアドレスから配信されております。
 　ご返信いただいてもお答えできませんのでご了承ください。
@@ -365,10 +364,10 @@ SEQ　倉庫管理番号                お客様管理番号  
 
 ======================================================================
 ■お問合せ先
-　三井物産グローバルロジスティクス株式会社
-　メディア事業室
-　   TEL : 03-5605-8287
-  E-mail : media@mitsui-gl.com
+　RazorPagesLearning株式会社
+　なんでも事業室
+　   TEL : 99-9999-9999
+  E-mail : hoge@test.com
 "
                 });
 
@@ -391,7 +390,7 @@ SEQ　倉庫管理番号                お客様管理番号  
             {
                 {
 #region 運送会社データを追加
-                    var transportAdminService = new RazorPagesLearning.Service.DB.TransportAdminService(ref_db, null, null, null);
+                    var transportAdminService = new Service.DB.TransportAdminService(ref_db, null, null, null);
                     var r = transportAdminService.read(code).FirstOrDefault();
                     if (null == r)
                     {
@@ -489,7 +488,7 @@ SEQ　倉庫管理番号                お客様管理番号  
                 //荷主マスタを追加する
                 {
 #region 荷主マスタを追加
-                    var shipperAdminService = new RazorPagesLearning.Service.DB.ShipperAdminService(db, null, null, null);
+                    var shipperAdminService = new Service.DB.ShipperAdminService(db, null, null, null);
                     {
                         var r = shipperAdminService.read(new Service.DB.ShipperAdminService.ReadConfig
                         {
@@ -556,7 +555,7 @@ SEQ　倉庫管理番号                お客様管理番号  
 
                 {
 #region 部課マスタを追加
-                    var departmentAdminService = new RazorPagesLearning.Service.DB.DepartmentAdminService(db, null, null, null);
+                    var departmentAdminService = new Service.DB.DepartmentAdminService(db, null, null, null);
                     {
                         var r = departmentAdminService.read(new Service.DB.DepartmentAdminService.ReadConfig
                         {
@@ -587,39 +586,6 @@ SEQ　倉庫管理番号                お客様管理番号  
                         }
                         db.SaveChanges();
                     }
-
-                    if (false)
-                    {
-                        //var r = departmentAdminService.read(new Service.DB.DepartmentAdminService.ReadConfig
-                        //{
-                        //    SHIPPER_CODE = "002",
-                        //    DEPARTMENT_CODE = "001"
-                        //});
-                        //if (null == r.result.FirstOrDefault())
-                        //{
-                        //    var l = new List<DEPARTMENT_ADMIN>();
-                        //    l.Add(new DEPARTMENT_ADMIN
-                        //    {
-                        //        SHIPPER_CODE = "002",
-                        //        DEPARTMENT_CODE = "011",
-                        //        DEPARTMENT_NAME = "癒し部",
-                        //        CREATED_USER_ACCOUNT_ID = 0,
-                        //        UPDATED_USER_ACCOUNT_ID = 0
-
-                        //    });
-                        //    l.Add(new DEPARTMENT_ADMIN
-                        //    {
-                        //        SHIPPER_CODE = "002",
-                        //        DEPARTMENT_CODE = "012",
-                        //        DEPARTMENT_NAME = "さぼり部",
-                        //        CREATED_USER_ACCOUNT_ID = 0,
-                        //        UPDATED_USER_ACCOUNT_ID = 0
-
-                        //    });
-                        //    departmentAdminService.add(l);
-                        //}
-                    }
-
 #endregion
                 }
 
@@ -632,16 +598,14 @@ SEQ　倉庫管理番号                お客様管理番号  
 
                 {
                     //部課情報関連付け用
-                    var departmentAdminService = new RazorPagesLearning.Service.DB.DepartmentAdminService(db, null, null, null);
+                    var departmentAdminService = new Service.DB.DepartmentAdminService(db, null, null, null);
                     var departmentAdmin = departmentAdminService.read(new Service.DB.DepartmentAdminService.ReadConfig
                     {
                         SHIPPER_CODE = "001"
                     }).result.First();
 
 #region 在庫データをいれる
-                    //const int DATA_NUM = 1000000;
                     const int DATA_NUM = 1000;
-                    //const int DATA_NUM = 100;
                     const int STEP = 10;
                     if (DATA_NUM > db.STOCKs.Count())
                     {
@@ -707,7 +671,7 @@ SEQ　倉庫管理番号                お客様管理番号  
 								TITLE = title,
 								STATUS = DOMAIN.StockStatusCode.STOCK,
 								SUBTITLE = "サイズ" + i.ToString(),
-								SHIPPER_CODE = "999",   // TWLでは、999:RazorPagesLearningになっているため真似ておく
+								SHIPPER_CODE = "999",   // RWLでは、999:RazorPagesLearningになっているため真似ておく
 								NOTE = "備考" + i.ToString(),
 								STOCK_COUNT = i * 50,
 								UNIT = i * 100,
@@ -809,7 +773,7 @@ SEQ　倉庫管理番号                お客様管理番号  
 
                 {
 #region メッセージマスタを追加
-                    var messageAdminService = new RazorPagesLearning.Service.DB.MessageAdminService(db, null, null, null);
+                    var messageAdminService = new Service.DB.MessageAdminService(db, null, null, null);
                     {
                         var now = DateTimeOffset.Now;
 
@@ -893,16 +857,16 @@ SEQ　倉庫管理番号                お客様管理番号  
 				//======================================================================================
 				{
 #region WMS集配先選択用の荷主マスタとWMS集配先マスタを追加
-                    var shipperAdminService = new RazorPagesLearning.Service.DB.ShipperAdminService(db, null, null, null);
+                    var shipperAdminService = new Service.DB.ShipperAdminService(db, null, null, null);
                     {
-                        var userService = new RazorPagesLearning.Service.User.UserService
+                        var userService = new Service.User.UserService
                             (serviceProvider.GetRequiredService<RazorPagesLearningContext>(), null, null, null);
 
                         //------------------------------------------------------------------------------
                         // ユーザを検索し、なければ追加する
                         //------------------------------------------------------------------------------
                         // ユーザ検索
-                        var wReadUser = userService.read("MWLSystemAdmin");
+                        var wReadUser = userService.read("RWLSystemAdmin");
                         // ユーザがなければ
                         if (null == wReadUser)
                         {
@@ -910,23 +874,22 @@ SEQ　倉庫管理番号                お客様管理番号  
                             var user = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
                             // ユーザを追加
-                            var r = userService.add(
+                            var r = userService.Add(
                             new Service.User.UserService.ChangeConfig
                             {
-                                password = "MWLSystemAdmin2018",
+                                password = "RWLSystemAdmin2018",
                                 USER_ACCOUNT = new USER_ACCOUNT
                                 {
-                                    USER_ID = "MWLSystemAdmin",
-                                    NAME = "MWLSystemAdmin",
-                                    KANA = "MWLSystemAdmin",
-                                    COMPANY = "三井物産グローバルロジスティクス株式会社",
-                                    ADDRESS1 = "東京都港区東新橋2-14-1",
-                                    ZIPCODE = "1050021",
-                                    TEL = "0356571130",
-                                    FAX = "0356571130",
+                                    USER_ID = "RWLSystemAdmin",
+                                    NAME = "RWLSystemAdmin",
+                                    KANA = "RWLSystemAdmin",
+                                    COMPANY = "RazorPagesLearning株式会社",
+                                    ADDRESS1 = "岩手県奥州市胆沢南都田字○○○9-9-9",
+                                    ZIPCODE = "0230401",
+                                    TEL = "9999999999",
+                                    FAX = "9999999999",
                                     MAIL = "hoge@test.com",
                                     PERMISSION = USER_ACCOUNT.ACCOUNT_PERMISSION.Admin
-
                                 }
                             });
                             db.SaveChanges();
@@ -945,21 +908,23 @@ SEQ　倉庫管理番号                お客様管理番号  
                         if (null == wReadShipperAdmin.result)
                         {
                             // 荷主マスタを追加
-                            var wLstShipperAdmin = new List<SHIPPER_ADMIN>();
-                            wLstShipperAdmin.Add(new SHIPPER_ADMIN
+                            var wLstShipperAdmin = new List<SHIPPER_ADMIN>
                             {
-                                SHIPPER_CODE = "N01",           // 荷主コード
-                                SHIPPER_NAME = "テレビ001", // 荷主名
+                                new SHIPPER_ADMIN
+                                {
+                                    SHIPPER_CODE = "N01",           // 荷主コード
+                                    SHIPPER_NAME = "テレビ001", // 荷主名
 
-                                AFTERNOON_FLAG = true,         // 午後設定
-                                PASSWORD_FLAG = true,          // パスワード有効期限
-                                CUSTOMER_ONLY_FLAG = true,     // 顧客専用項目
-                                CREATED_AT = DateTime.ParseExact("2018/08/07 00:00:00", "yyyy/MM/dd HH:mm:ss", null), // 登録日
-                                UPDATED_AT = DateTime.ParseExact("2018/08/07 00:00:00", "yyyy/MM/dd HH:mm:ss", null), // 更新日
-                                CREATED_USER_ACCOUNT_ID = 0,   // 登録ユーザーID
-                                UPDATED_USER_ACCOUNT_ID = 0,   // 更新ユーザーID
-                                DELETE_FLAG = false            // 削除フラグ
-                            });
+                                    AFTERNOON_FLAG = true,         // 午後設定
+                                    PASSWORD_FLAG = true,          // パスワード有効期限
+                                    CUSTOMER_ONLY_FLAG = true,     // 顧客専用項目
+                                    CREATED_AT = DateTime.ParseExact("2018/08/07 00:00:00", "yyyy/MM/dd HH:mm:ss", null), // 登録日
+                                    UPDATED_AT = DateTime.ParseExact("2018/08/07 00:00:00", "yyyy/MM/dd HH:mm:ss", null), // 更新日
+                                    CREATED_USER_ACCOUNT_ID = 0,   // 登録ユーザーID
+                                    UPDATED_USER_ACCOUNT_ID = 0,   // 更新ユーザーID
+                                    DELETE_FLAG = false            // 削除フラグ
+                                }
+                            };
                             shipperAdminService.add(wLstShipperAdmin);
 
                             db.SaveChanges();
@@ -1146,19 +1111,19 @@ SEQ　倉庫管理番号                お客様管理番号  
             context.Database.EnsureCreated();
 
             //ポリシーデータを追加
-            initPOLICY(serviceProvider);
+            InitPOLICY(serviceProvider);
 
             //権限一覧を追加
-            initUserRoles(serviceProvider).Wait();
+            InitUserRoles(serviceProvider).Wait();
 
             //システムのデフォルト管理者を登録する
-            initAdminUser(serviceProvider).Wait();
+            InitAdminUser(serviceProvider).Wait();
 
             //ドメインデータを追加する
-            initDOMAINData(serviceProvider);
+            InitDOMAINData(serviceProvider);
 
             //システム設定情報を追加する
-            initSystemSetting(serviceProvider);
+            InitSystemSetting(serviceProvider);
 
             //テスト用の初期DBを追加する
             setupDebugDate(serviceProvider).Wait();

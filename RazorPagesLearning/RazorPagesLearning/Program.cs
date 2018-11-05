@@ -13,18 +13,16 @@ namespace RazorPagesLearning
             //Win上で実行した時の日本語化対応
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            //CreateWebHostBuilder(args).Build().Run();
-
             var host = CreateWebHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var context = services.GetRequiredService<RazorPagesLearning.Data.RazorPagesLearningContext>();
+                //var context = services.GetRequiredService<Data.RazorPagesLearningContext>();
 
                 try
                 {
                     //DB上に初期データを登録する
-                    RazorPagesLearning.Data.SeedData.Initialize(services);
+                    Data.SeedData.Initialize(services);
                 }
                 catch (Exception ex)
                 {

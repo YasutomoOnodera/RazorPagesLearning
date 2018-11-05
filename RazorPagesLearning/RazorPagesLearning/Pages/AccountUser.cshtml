@@ -85,20 +85,20 @@
                         <h1>ユーザーID</h1>
                         <p>
                             @{
-                                var isAnd_USER_ID_checked = "checked";
+                                var IsAnd_USER_ID_checked = "checked";
                                 if (null != Model.searchConditions)
                                 {
-                                    if (true == Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA)
+                                    if (true == Model.searchConditions.queryConditions.IsAnd_USER_NAME_KANA)
                                     {
 
-                                        isAnd_USER_ID_checked = "";
+                                        IsAnd_USER_ID_checked = "";
                                     }
                                 }
                             }
 
                             <input type="text" asp-for="@Model.searchConditions.queryConditions.USER_ID" maxlength="30">
-                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_ID"> AND
-                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_ID"
+                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.IsAnd_USER_ID"> AND
+                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.IsAnd_USER_ID"
                                    @isAnd_USER_ID_checked>
                             OR
                         </p>
@@ -107,20 +107,20 @@
                         <h1> ユーザー名(カナ) </h1>
                         <p>
                             @{
-                                var isAnd_USER_NAME_KANAchecked = "checked";
+                                var IsAnd_USER_NAME_KANAchecked = "checked";
                                 if (null != Model.searchConditions)
                                 {
-                                    if (true == Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA)
+                                    if (true == Model.searchConditions.queryConditions.IsAnd_USER_NAME_KANA)
                                     {
 
-                                        isAnd_USER_NAME_KANAchecked = "";
+                                        IsAnd_USER_NAME_KANAchecked = "";
                                     }
                                 }
                             }
 
                             <input type="text" asp-for="@Model.searchConditions.queryConditions.USER_NAME_KANA" maxlength="50" size="14">
-                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA"> AND
-                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA"
+                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.IsAnd_USER_NAME_KANA"> AND
+                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.IsAnd_USER_NAME_KANA"
                                    @isAnd_USER_NAME_KANAchecked>
                             OR
                         </p>
@@ -129,21 +129,21 @@
                         <h1>社名</h1>
                         <p>
                             @{
-                                var isAnd_COMPANYchecked = "checked";
+                                var IsAnd_COMPANYchecked = "checked";
                                 if (null != Model.searchConditions)
                                 {
-                                    if (true == Model.searchConditions.queryConditions.isAnd_USER_NAME_KANA)
+                                    if (true == Model.searchConditions.queryConditions.IsAnd_USER_NAME_KANA)
                                     {
 
-                                        isAnd_COMPANYchecked = "";
+                                        IsAnd_COMPANYchecked = "";
                                     }
                                 }
                             }
 
 
                             <input type="text" asp-for="@Model.searchConditions.queryConditions.COMPANY" maxlength="72">
-                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.isAnd_COMPANY"> AND
-                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.isAnd_COMPANY"
+                            <input type="radio" value="true" asp-for="@Model.searchConditions.queryConditions.IsAnd_COMPANY"> AND
+                            <input type="radio" value="false" asp-for="@Model.searchConditions.queryConditions.IsAnd_COMPANY"
                                    @isAnd_COMPANYchecked>
                             OR
                         </p>

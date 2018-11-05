@@ -602,8 +602,8 @@ namespace RazorPagesLearning.Pages
                 {
                     #region 更新ユーザー情報を追加する
 
-                    adc.createdUserAccountId = USER_ACCOUNT.ID;
-                    adc.updatedUserAccountId = USER_ACCOUNT.ID;
+                    adc.CreatedUserAccountId = USER_ACCOUNT.ID;
+                    adc.UpdatedUserAccountId = USER_ACCOUNT.ID;
                     adc.USER_ACCOUNT.PASSWORD_UPDATED_AT = USER_ACCOUNT.PASSWORD_UPDATED_AT;
 
                     #endregion
@@ -1021,7 +1021,7 @@ namespace RazorPagesLearning.Pages
                     }
 
                     //新規登録する新規登録するデータ
-                    var r = await userService.add(adc.Item2);
+                    var r = await userService.Add(adc.Item2);
                     if (false == r.succeed)
                     {
                         this.viewModel.errorMessage = r.errorMessages;
